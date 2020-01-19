@@ -81,7 +81,7 @@ where
     #[cfg(feature = "U256")]
     #[inline(always)]
     fn uint256(&self, index: usize) -> bigint::U256 {
-        bigint::U256::from(&self.as_ref()[index * 32 + 24..(index + 1) * 32])
+        bigint::U256::from(&self.as_ref()[index * 32..(index + 1) * 32])
     }
 
     #[cfg(not(feature = "U256"))]

@@ -1,11 +1,14 @@
-use crate::solidity::SolidityBytesN;
-use crate::solidity::Type;
+use crate::solidity::ConcreteSolidityType;
+use crate::solidity::IntoSolidityType;
+use crate::solidity::IntoType;
+use crate::solidity::IntoVecType;
+use crate::solidity::SolidityArray;
 use byteorder::{BigEndian, ByteOrder};
 use sha3::{Digest, Keccak256};
 
 pub struct Builder<'a> {
     name: Option<String>,
-    params: Vec<Type<'a>>,
+    pub(super) params: Vec<ConcreteSolidityType<'a>>,
 }
 
 impl<'a> Builder<'a> {
@@ -21,43 +24,22 @@ impl<'a> Builder<'a> {
         self
     }
 
-    pub fn add<F: Into<Type<'a>>>(mut self, value: F) -> Self {
-        self.params.push(value.into());
+    fn add<F: IntoType<'a>>(mut self, value: F) -> Self {
+        self.params.push(value.into_type());
         self
     }
 
-    pub fn add_bytes_n<F: SolidityBytesN + AsRef<[u8]>>(mut self, value: F) -> Self {
-        let mut bytes = [0; 32];
-        bytes[0..value.as_ref().len()].copy_from_slice(&value.as_ref());
-        self.params
-            .push(Type::BytesN(value.solidity_bytes_len(), bytes));
-        self
-    }
+    fn add_array<F: IntoSolidityType + IntoVecType<'a>>(mut self, value: F) -> Self {
+        let r#type = value.into_solidity_type();
+        let array = value.into_vec_type();
 
-    pub fn add_i256(mut self, value: &'a [u8; 32]) -> Self {
-        self.params.push(Type::I256(value));
-        self
-    }
-
-    #[cfg(feature = "U256")]
-    pub fn add_u256(mut self, value: bigint::U256) -> Self {
-        self.params.push(Type::U256(value));
-        self
-    }
-
-    #[cfg(not(feature = "U256"))]
-    pub fn add_u256(mut self, value: &'a [u8; 32]) -> Self {
-        self.params.push(Type::U256(value));
-        self
-    }
-
-    pub fn add_bytes(mut self, value: &'a [u8]) -> Self {
-        self.params.push(Type::Bytes(value));
-        self
-    }
-
-    pub fn add_string(mut self, value: &'a str) -> Self {
-        self.params.push(Type::String(value));
+        self.params.push(ConcreteSolidityType::Array(
+            r#type,
+            SolidityArray {
+                dimensions: 1,
+                array,
+            },
+        ));
         self
     }
 
@@ -75,7 +57,7 @@ impl<'a> Builder<'a> {
                 name,
                 self.params
                     .iter()
-                    .map(Type::to_string)
+                    .map(ConcreteSolidityType::to_string)
                     .collect::<Vec<String>>()
                     .join(",")
             );
@@ -89,12 +71,14 @@ impl<'a> Builder<'a> {
         let total_len = self
             .params
             .iter()
-            .map(Type::required_byte_len)
-            .zip(self.params.iter().map(Type::is_dynamic))
+            .map(ConcreteSolidityType::required_byte_len)
+            .zip(self.params.iter().map(ConcreteSolidityType::is_dynamic))
             .fold(
                 0,
                 |sum, (len, dynamic)| if dynamic { 32 + sum + len } else { sum + len },
             );
+
+        println!("total_len: {}", total_len);
 
         let mut buf: Vec<u8> = vec![0; total_len + name_offset];
 
@@ -103,7 +87,7 @@ impl<'a> Builder<'a> {
         for (index, (dynamic, bytes)) in self
             .params
             .into_iter()
-            .map(Type::to_bytes)
+            .map(ConcreteSolidityType::to_bytes)
             .into_iter()
             .enumerate()
         {
@@ -112,7 +96,7 @@ impl<'a> Builder<'a> {
                     &mut buf[index * 32 + 24 + name_offset..(index + 1) * 32 + name_offset],
                     offset as u64,
                 );
-                buf[offset..].copy_from_slice(&bytes);
+                buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                 offset += bytes.len()
             } else {
                 buf[index * 32 + name_offset..(index + 1) * 32 + name_offset]

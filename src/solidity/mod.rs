@@ -29,10 +29,11 @@ pub enum ConcreteSolidityType<'a> {
     U256(SolidityType, &'a [u8; 32]),
 
     BytesN(SolidityType, [u8; 32]),
-
     Bytes(SolidityType, &'a [u8]),
-
     String(SolidityType, &'a str),
+    Address(SolidityType, &'a [u8; 20]),
+    Function(SolidityType, &'a [u8; 24]),
+
     Array(SolidityType, SolidityArray<'a>),
 }
 
@@ -62,6 +63,8 @@ pub enum SolidityType {
 
     BytesN(usize),
     Bytes,
+    Address,
+    Function,
     String,
 }
 
@@ -82,6 +85,8 @@ impl SolidityType {
             SolidityType::U256 => "uint256".to_owned(),
             SolidityType::BytesN(len) => format!("bytes{}", len),
             SolidityType::Bytes => "bytes".to_owned(),
+            SolidityType::Address => "address".to_owned(),
+            SolidityType::Function => "function".to_owned(),
             SolidityType::String => "string".to_owned(),
         }
     }
@@ -103,6 +108,8 @@ impl SolidityType {
             SolidityType::BytesN(_) => false,
             SolidityType::Bytes => true,
             SolidityType::String => true,
+            SolidityType::Address => false,
+            SolidityType::Function => false,
         }
     }
 }
@@ -125,6 +132,8 @@ impl<'a> ConcreteSolidityType<'a> {
             ConcreteSolidityType::BytesN(ty, _) => ty.is_dynamic(),
             ConcreteSolidityType::Bytes(ty, _) => ty.is_dynamic(),
             ConcreteSolidityType::String(ty, _) => ty.is_dynamic(),
+            ConcreteSolidityType::Address(ty, _) => ty.is_dynamic(),
+            ConcreteSolidityType::Function(ty, _) => ty.is_dynamic(),
             ConcreteSolidityType::Array(_, _) => true,
         }
     }
@@ -144,6 +153,8 @@ impl<'a> ConcreteSolidityType<'a> {
             ConcreteSolidityType::I256(_, _) => self.byte_len(),
             ConcreteSolidityType::U256(_, _) => self.byte_len(),
             ConcreteSolidityType::BytesN(_, _) => self.byte_len(),
+            ConcreteSolidityType::Address(_, _) => self.byte_len(),
+            ConcreteSolidityType::Function(_, _) => self.byte_len(),
             ConcreteSolidityType::Bytes(_, _) => 32 + self.byte_len(),
             ConcreteSolidityType::String(_, _) => 32 + self.byte_len(),
             ConcreteSolidityType::Array(ty, value) => {
@@ -177,6 +188,8 @@ impl<'a> ConcreteSolidityType<'a> {
             ConcreteSolidityType::I256(_, _) => 32,
             ConcreteSolidityType::U256(_, _) => 32,
             ConcreteSolidityType::BytesN(_, _) => 32,
+            ConcreteSolidityType::Address(_, _) => 32,
+            ConcreteSolidityType::Function(_, _) => 32,
             ConcreteSolidityType::Bytes(_, value) => (value.len() / 32 + 1) * 32,
             ConcreteSolidityType::String(_, value) => (value.as_bytes().len() / 32 + 1) * 32,
             ConcreteSolidityType::Array(_, value) => value
@@ -202,6 +215,8 @@ impl<'a> ConcreteSolidityType<'a> {
             ConcreteSolidityType::I256(ty, _) => ty.to_string(),
             ConcreteSolidityType::U256(ty, _) => ty.to_string(),
             ConcreteSolidityType::BytesN(ty, _) => ty.to_string(),
+            ConcreteSolidityType::Address(ty, _) => ty.to_string(),
+            ConcreteSolidityType::Function(ty, _) => ty.to_string(),
             ConcreteSolidityType::Bytes(ty, _) => ty.to_string(),
             ConcreteSolidityType::String(ty, _) => ty.to_string(),
             ConcreteSolidityType::Array(ty, value) => {
@@ -237,6 +252,8 @@ impl<'a> ConcreteSolidityType<'a> {
             U256(_, value) => buf.copy_from_slice(value),
 
             BytesN(_, value) => buf.copy_from_slice(&value),
+            Address(_, value) => buf[12..32].copy_from_slice(value),
+            Function(_, value) => buf[8..32].copy_from_slice(value),
 
             Bytes(_, value) => {
                 let len = ConcreteSolidityType::U64(SolidityType::U64, value.len() as u64);

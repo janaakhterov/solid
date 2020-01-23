@@ -218,3 +218,27 @@ fn bytes_array_test() {
     assert_eq!(&string_array_2_len[0..32],    &buf[32 * 14..32 * 15]);
     assert_eq!(&string_array_2_bytes[0..32],  &buf[32 * 15..32 * 16]);
 }
+
+#[test]
+#[rustfmt::skip]
+fn address_test() {
+    let buf = Builder::new()
+        .add_address(&[0xffu8; 20])
+        .build();
+
+    let address = hex::decode("000000000000000000000000ffffffffffffffffffffffffffffffffffffffff").unwrap();
+
+    assert_eq!(&address[0..32], &buf[32 * 0..32 * 1]);
+}
+
+#[test]
+#[rustfmt::skip]
+fn function_test() {
+    let buf = Builder::new()
+        .add_function(&[0xffu8; 24])
+        .build();
+
+    let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
+
+    assert_eq!(&function[0..32], &buf[32 * 0..32 * 1]);
+}

@@ -1,6 +1,6 @@
 use super::ConcreteSolidityType;
 use super::SolidityType;
-use crate::function::Builder;
+use crate::builder::Builder;
 
 // This macro is used to generate all the `Builder::add_*()` methods for the various number types.
 #[macro_use]
@@ -48,8 +48,6 @@ impl_solidity_function_for_builder!(u128 => U128: add_u128 | add_u128_array);
 impl_solidity_function_for_builder!(&'a [u8; 32] => I256: add_i256 | add_i256_array);
 impl_solidity_function_for_builder!(&'a str => String: add_string | add_string_array);
 impl_solidity_function_for_builder!(&'a [u8] => Bytes: add_bytes | add_bytes_array);
-impl_solidity_function_for_builder!(&'a [u8; 20] => Address: add_address | add_address_array);
-impl_solidity_function_for_builder!(&'a [u8; 24] => Function: add_function | add_function_array);
 
 #[cfg(feature = "U256")]
 impl_solidity_function_for_builder!(bigint::U256 => U256: add_u256 | add_u256_array);

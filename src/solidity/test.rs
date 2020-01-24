@@ -1,4 +1,4 @@
-use crate::function::Builder;
+use crate::builder::Builder;
 
 #[test]
 #[rustfmt::skip]
@@ -80,16 +80,16 @@ fn byte_n_test() {
 #[rustfmt::skip]
 fn array_number_test() {
     let buf = Builder::new()
-        .add_i8_array(&[0xffu8 as i8; 2].to_vec())
-        .add_u8_array(&[0xffu8; 2].to_vec())
-        .add_i16_array(&[0xffffu16 as i16; 2].to_vec())
-        .add_u16_array(&[0xffffu16; 2].to_vec())
-        .add_i32_array(&[0xffffffffu32 as i32; 2].to_vec())
-        .add_u32_array(&[0xffffffffu32; 2].to_vec())
-        .add_i64_array(&[0xffffffffffffffffu64 as i64; 2].to_vec())
-        .add_u64_array(&[0xffffffffffffffffu64; 2].to_vec())
-        .add_i128_array(&[0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
-        .add_u128_array(&[0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
+        .add(&[0xffu8 as i8; 2].to_vec())
+        .add(&[0xffu8; 2].to_vec())
+        .add(&[0xffffu16 as i16; 2].to_vec())
+        .add(&[0xffffu16; 2].to_vec())
+        .add(&[0xffffffffu32 as i32; 2].to_vec())
+        .add(&[0xffffffffu32; 2].to_vec())
+        .add(&[0xffffffffffffffffu64 as i64; 2].to_vec())
+        .add(&[0xffffffffffffffffu64; 2].to_vec())
+        .add(&[0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
+        .add(&[0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
         .build();
 
     let i8_offset   = hex::decode("0000000000000000000000000000000000000000000000000000000000000140").unwrap();
@@ -180,8 +180,8 @@ fn array_number_test() {
 #[rustfmt::skip]
 fn bytes_array_test() {
     let buf = Builder::new()
-        .add_bytes_array(&[[0xaau8; 16].to_vec().as_slice(), [0xffu8; 16].to_vec().as_slice()].to_vec())
-        .add_string_array(&vec!["random string", "what about another one"])
+        .add(&[[0xaau8; 16].to_vec().as_slice(), [0xffu8; 16].to_vec().as_slice()].to_vec())
+        .add(&vec!["random string", "what about another one"])
         .build();
 
     let bytes_array_offset    = hex::decode("0000000000000000000000000000000000000000000000000000000000000040").unwrap();
@@ -221,24 +221,24 @@ fn bytes_array_test() {
 
 #[test]
 #[rustfmt::skip]
-fn address_test() {
-    let buf = Builder::new()
-        .add_address(&[0xffu8; 20])
-        .build();
+fn address_test() -> Result<(), anyhow::Error> {
+    let buf = Builder::new().add_address(&[0xffu8; 20][..])?.build();
 
     let address = hex::decode("000000000000000000000000ffffffffffffffffffffffffffffffffffffffff").unwrap();
 
     assert_eq!(&address[0..32], &buf[32 * 0..32 * 1]);
+
+    Ok(())
 }
 
 #[test]
 #[rustfmt::skip]
-fn function_test() {
-    let buf = Builder::new()
-        .add_function(&[0xffu8; 24])
-        .build();
+fn function_test() -> Result<(), anyhow::Error> {
+    let buf = Builder::new().add_function(&[0xffu8; 24][..])?.build();
 
     let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
 
     assert_eq!(&function[0..32], &buf[32 * 0..32 * 1]);
+
+    Ok(())
 }

@@ -1,4 +1,8 @@
 #![allow(dead_code)]
-pub mod function;
+
+#[macro_use]
+extern crate anyhow;
+
+pub mod builder;
 pub mod result;
 pub mod solidity;

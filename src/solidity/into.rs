@@ -1,16 +1,9 @@
 use super::ConcreteSolidityType;
+use super::SolidityArray;
 use super::SolidityType;
 
 pub trait IntoType<'a> {
     fn into_type(self) -> ConcreteSolidityType<'a>;
-}
-
-pub trait IntoSolidityType {
-    fn into_solidity_type(&self) -> SolidityType;
-}
-
-pub trait IntoVecType<'a> {
-    fn into_vec_type(&self) -> Vec<ConcreteSolidityType<'a>>;
 }
 
 // This macro generates all the into implementations for the various number variants.
@@ -30,45 +23,37 @@ macro_rules! impl_solidity_into {
             }
         }
 
-        impl IntoSolidityType for Vec<$ty> {
-            fn into_solidity_type(&self) -> SolidityType {
-                SolidityType::$solidity
-            }
-        }
-
-        impl IntoSolidityType for &Vec<$ty> {
-            fn into_solidity_type(&self) -> SolidityType {
-                SolidityType::$solidity
-            }
-        }
-
-        impl IntoSolidityType for &[$ty] {
-            fn into_solidity_type(&self) -> SolidityType {
-                SolidityType::$solidity
-            }
-        }
-
-        impl<'a> IntoVecType<'a> for &Vec<$ty> {
-            fn into_vec_type(&self) -> Vec<ConcreteSolidityType<'a>> {
-                self.iter()
+        impl<'a> IntoType<'a> for Vec<$ty> {
+            fn into_type(self) -> ConcreteSolidityType<'a> {
+                let array = self
+                    .iter()
                     .map(|value| ConcreteSolidityType::$solidity(SolidityType::$solidity, *value))
-                    .collect()
+                    .collect::<Vec<ConcreteSolidityType>>();
+
+                ConcreteSolidityType::Array(
+                    SolidityType::$solidity,
+                    SolidityArray {
+                        dimensions: 1,
+                        array,
+                    },
+                )
             }
         }
 
-        impl<'a> IntoVecType<'a> for Vec<$ty> {
-            fn into_vec_type(&self) -> Vec<ConcreteSolidityType<'a>> {
-                self.iter()
+        impl<'a> IntoType<'a> for &Vec<$ty> {
+            fn into_type(self) -> ConcreteSolidityType<'a> {
+                let array = self
+                    .iter()
                     .map(|value| ConcreteSolidityType::$solidity(SolidityType::$solidity, *value))
-                    .collect()
-            }
-        }
+                    .collect::<Vec<ConcreteSolidityType>>();
 
-        impl<'a> IntoVecType<'a> for &[$ty] {
-            fn into_vec_type(&self) -> Vec<ConcreteSolidityType<'a>> {
-                self.iter()
-                    .map(|value| ConcreteSolidityType::$solidity(SolidityType::$solidity, *value))
-                    .collect()
+                ConcreteSolidityType::Array(
+                    SolidityType::$solidity,
+                    SolidityArray {
+                        dimensions: 1,
+                        array,
+                    },
+                )
             }
         }
     };
@@ -87,3 +72,6 @@ impl_solidity_into!(u128, U128);
 
 #[cfg(feature = "U256")]
 impl_solidity_into!(bigint::U256, U256);
+
+impl_solidity_into!(&'a str, String);
+impl_solidity_into!(&'a [u8], Bytes);

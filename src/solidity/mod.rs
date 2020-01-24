@@ -1,13 +1,17 @@
 use byteorder::{BigEndian, ByteOrder};
-pub(crate) use into::IntoSolidityType;
-pub(crate) use into::IntoType;
-pub(crate) use into::IntoVecType;
 
+pub(crate) use into::IntoType;
+
+mod address;
+mod function;
 mod into;
 mod method;
 
 #[cfg(test)]
 mod test;
+
+pub use address::Address;
+pub use function::Function;
 
 pub enum ConcreteSolidityType<'a> {
     I8(SolidityType, i8),
@@ -31,8 +35,8 @@ pub enum ConcreteSolidityType<'a> {
     BytesN(SolidityType, [u8; 32]),
     Bytes(SolidityType, &'a [u8]),
     String(SolidityType, &'a str),
-    Address(SolidityType, &'a [u8; 20]),
-    Function(SolidityType, &'a [u8; 24]),
+    Address(SolidityType, Address),
+    Function(SolidityType, Function),
 
     Array(SolidityType, SolidityArray<'a>),
 }
@@ -252,8 +256,8 @@ impl<'a> ConcreteSolidityType<'a> {
             U256(_, value) => buf.copy_from_slice(value),
 
             BytesN(_, value) => buf.copy_from_slice(&value),
-            Address(_, value) => buf[12..32].copy_from_slice(value),
-            Function(_, value) => buf[8..32].copy_from_slice(value),
+            Address(_, value) => buf[12..32].copy_from_slice(&value.0[0..20]),
+            Function(_, value) => buf[8..32].copy_from_slice(&value.0[0..24]),
 
             Bytes(_, value) => {
                 let len = ConcreteSolidityType::U64(SolidityType::U64, value.len() as u64);

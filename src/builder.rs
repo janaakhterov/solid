@@ -1,10 +1,11 @@
+use crate::solidity::Address;
 use crate::solidity::ConcreteSolidityType;
-use crate::solidity::IntoSolidityType;
+use crate::solidity::Function;
 use crate::solidity::IntoType;
-use crate::solidity::IntoVecType;
-use crate::solidity::SolidityArray;
+use crate::solidity::SolidityType;
 use byteorder::{BigEndian, ByteOrder};
 use sha3::{Digest, Keccak256};
+use std::convert::TryInto;
 
 pub struct Builder<'a> {
     name: Option<String>,
@@ -24,23 +25,29 @@ impl<'a> Builder<'a> {
         self
     }
 
-    fn add<F: IntoType<'a>>(mut self, value: F) -> Self {
+    pub fn add<F: IntoType<'a>>(mut self, value: F) -> Self {
         self.params.push(value.into_type());
         self
     }
 
-    fn add_array<F: IntoSolidityType + IntoVecType<'a>>(mut self, value: F) -> Self {
-        let r#type = value.into_solidity_type();
-        let array = value.into_vec_type();
-
-        self.params.push(ConcreteSolidityType::Array(
-            r#type,
-            SolidityArray {
-                dimensions: 1,
-                array,
-            },
+    pub fn add_address<F: TryInto<Address>>(mut self, value: F) -> Result<Self, F::Error> {
+        let address: Address = value.try_into()?;
+        self.params.push(ConcreteSolidityType::Address(
+            SolidityType::Address,
+            address,
         ));
-        self
+
+        Ok(self)
+    }
+
+    pub fn add_function<F: TryInto<Function>>(mut self, value: F) -> Result<Self, F::Error> {
+        let function: Function = value.try_into()?;
+        self.params.push(ConcreteSolidityType::Function(
+            SolidityType::Function,
+            function,
+        ));
+
+        Ok(self)
     }
 
     pub fn build(self) -> Vec<u8> {

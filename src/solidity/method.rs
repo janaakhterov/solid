@@ -48,10 +48,6 @@ impl_solidity_function_for_builder!(u128 => U128: add_u128 | add_u128_array);
 impl_solidity_function_for_builder!(&'a [u8; 32] => I256: add_i256 | add_i256_array);
 impl_solidity_function_for_builder!(&'a str => String: add_string | add_string_array);
 impl_solidity_function_for_builder!(&'a [u8] => Bytes: add_bytes | add_bytes_array);
-
-#[cfg(feature = "U256")]
-impl_solidity_function_for_builder!(bigint::U256 => U256: add_u256 | add_u256_array);
-#[cfg(not(feature = "U256"))]
 impl_solidity_function_for_builder!(&'a [u8; 32] => U256: add_u256 | add_u256_array);
 
 #[macro_use]

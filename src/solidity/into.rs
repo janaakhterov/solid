@@ -69,9 +69,5 @@ impl_solidity_into!(i64, I64);
 impl_solidity_into!(u64, U64);
 impl_solidity_into!(i128, I128);
 impl_solidity_into!(u128, U128);
-
-#[cfg(feature = "U256")]
-impl_solidity_into!(bigint::U256, U256);
-
 impl_solidity_into!(&'a str, String);
 impl_solidity_into!(&'a [u8], Bytes);

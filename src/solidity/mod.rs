@@ -25,19 +25,12 @@ pub enum ConcreteSolidityType<'a> {
     I128(SolidityType, i128),
     U128(SolidityType, u128),
     I256(SolidityType, &'a [u8; 32]),
-
-    #[cfg(feature = "U256")]
-    U256(SolidityType, bigint::U256),
-
-    #[cfg(not(feature = "U256"))]
     U256(SolidityType, &'a [u8; 32]),
-
     BytesN(SolidityType, [u8; 32]),
     Bytes(SolidityType, &'a [u8]),
     String(SolidityType, &'a str),
     Address(SolidityType, Address),
     Function(SolidityType, Function),
-
     Array(SolidityType, SolidityArray<'a>),
 }
 
@@ -58,13 +51,7 @@ pub enum SolidityType {
     I128,
     U128,
     I256,
-
-    #[cfg(feature = "U256")]
     U256,
-
-    #[cfg(not(feature = "U256"))]
-    U256,
-
     BytesN(usize),
     Bytes,
     Address,

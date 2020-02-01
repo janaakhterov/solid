@@ -12,10 +12,6 @@ pub trait SolidityResult {
     fn int128(&self, index: usize) -> i128;
     fn uint128(&self, index: usize) -> u128;
     fn int256(&self, index: usize) -> &[u8];
-
-    #[cfg(feature = "U256")]
-    fn uint256(&self, index: usize) -> bigint::U256;
-    #[cfg(not(feature = "U256"))]
     fn uint256(&self, index: usize) -> &[u8];
 }
 
@@ -78,13 +74,6 @@ where
         &self.as_ref()[index * 32 + 24..(index + 1) * 32]
     }
 
-    #[cfg(feature = "U256")]
-    #[inline(always)]
-    fn uint256(&self, index: usize) -> bigint::U256 {
-        bigint::U256::from(&self.as_ref()[index * 32..(index + 1) * 32])
-    }
-
-    #[cfg(not(feature = "U256"))]
     #[inline(always)]
     fn uint256(&self, index: usize) -> &[u8] {
         &self.as_ref()[index * 32 + 24..(index + 1) * 32]

@@ -242,3 +242,15 @@ fn function_test() -> Result<(), anyhow::Error> {
 
     Ok(())
 }
+
+#[test]
+#[rustfmt::skip]
+fn hex_test() -> Result<(), anyhow::Error> {
+    let buf = Builder::new().add_function("0xffffffffffffffffffffffffffffffffffffffffffffffff")?.build();
+
+    let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
+
+    assert_eq!(&function[0..32], &buf[32 * 0..32 * 1]);
+
+    Ok(())
+}

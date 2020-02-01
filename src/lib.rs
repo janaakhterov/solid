@@ -5,4 +5,5 @@ extern crate anyhow;
 
 pub mod builder;
 pub mod result;
+pub mod selector;
 pub mod solidity;

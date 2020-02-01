@@ -50,13 +50,8 @@ impl<'a> Builder<'a> {
         Ok(self)
     }
 
-    pub fn build(self) -> Vec<u8> {
-        let name_offset = match self.name {
-            None => 0,
-            Some(_) => 4,
-        };
-
-        let sig: Option<[u8; 4]> = if let Some(name) = self.name {
+    pub fn signature(&self) -> [u8; 4] {
+        if let Some(name) = &self.name {
             let mut sig = [0; 4];
             let mut hasher = Keccak256::new();
             let function = format!(
@@ -70,7 +65,20 @@ impl<'a> Builder<'a> {
             );
             hasher.input(&function);
             sig.copy_from_slice(&hasher.result());
-            Some(sig)
+            sig
+        } else {
+            panic!("cannot calculate function signature without a name");
+        }
+    }
+
+    pub fn build(self) -> Vec<u8> {
+        let name_offset = match self.name {
+            None => 0,
+            Some(_) => 4,
+        };
+
+        let sig = if let Some(_) = self.name {
+            Some(self.signature())
         } else {
             None
         };
@@ -84,8 +92,6 @@ impl<'a> Builder<'a> {
                 0,
                 |sum, (len, dynamic)| if dynamic { 32 + sum + len } else { sum + len },
             );
-
-        println!("total_len: {}", total_len);
 
         let mut buf: Vec<u8> = vec![0; total_len + name_offset];
 
@@ -118,3 +124,51 @@ impl<'a> Builder<'a> {
         buf
     }
 }
+
+// This macro is used to generate all the `Builder::add_*()` methods for the various number types.
+#[macro_use]
+macro_rules! impl_solidity_function_for_builder {
+    ($ty: ty => $solidity: ident: $function: ident | $array: ident) => {
+        impl<'a> Builder<'a> {
+            pub fn $function(mut self, value: $ty) -> Self {
+                self.params.push(ConcreteSolidityType::$solidity(
+                    SolidityType::$solidity,
+                    value,
+                ));
+                self
+            }
+
+            pub fn $array(mut self, value: &Vec<$ty>) -> Self {
+                use crate::solidity::SolidityArray;
+                let array = value
+                    .iter()
+                    .map(|value| ConcreteSolidityType::$solidity(SolidityType::$solidity, *value))
+                    .collect();
+
+                self.params.push(ConcreteSolidityType::Array(
+                    SolidityType::$solidity,
+                    SolidityArray {
+                        dimensions: 1,
+                        array,
+                    },
+                ));
+                self
+            }
+        }
+    };
+}
+
+impl_solidity_function_for_builder!(i8 => I8: add_i8 | add_i8_array);
+impl_solidity_function_for_builder!(u8 => U8: add_u8 | add_u8_array);
+impl_solidity_function_for_builder!(i16 => I16: add_i16 | add_i16_array);
+impl_solidity_function_for_builder!(u16 => U16 : add_u16 | add_u16_array);
+impl_solidity_function_for_builder!(i32 => I32 : add_i32 | add_i32_array);
+impl_solidity_function_for_builder!(u32 => U32 : add_u32 | add_u32_array);
+impl_solidity_function_for_builder!(i64 => I64 : add_i64 | add_i64_array);
+impl_solidity_function_for_builder!(u64 => U64 : add_u64 | add_u64_array);
+impl_solidity_function_for_builder!(i128 => I128: add_i128 | add_i128_array);
+impl_solidity_function_for_builder!(u128 => U128: add_u128 | add_u128_array);
+impl_solidity_function_for_builder!(&'a [u8; 32] => I256: add_i256 | add_i256_array);
+impl_solidity_function_for_builder!(&'a str => String: add_string | add_string_array);
+impl_solidity_function_for_builder!(&'a [u8] => Bytes: add_bytes | add_bytes_array);
+impl_solidity_function_for_builder!(&'a [u8; 32] => U256: add_u256 | add_u256_array);

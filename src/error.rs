@@ -1,15 +1,17 @@
 use serde::{de, ser};
 use std::fmt;
+use std::string::FromUtf8Error;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-#[derive(Clone, Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     Message(String),
     Eof,
     TrailingCharacters,
     TryIntoSliceError(#[from] std::array::TryFromSliceError),
     Utf8Error(#[from] std::str::Utf8Error),
+    FromUtf8Error(#[from] FromUtf8Error),
 }
 
 impl ser::Error for Error {

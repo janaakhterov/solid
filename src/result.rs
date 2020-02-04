@@ -1,81 +1,155 @@
-use byteorder::{BigEndian, ByteOrder};
+use crate::from_bytes::FromBytes;
+use crate::Result;
 
-pub trait SolidityResult {
-    fn int8(&self, index: usize) -> i8;
-    fn uint8(&self, index: usize) -> u8;
-    fn int16(&self, index: usize) -> i16;
-    fn uint16(&self, index: usize) -> u16;
-    fn int32(&self, index: usize) -> i32;
-    fn uint32(&self, index: usize) -> u32;
-    fn int64(&self, index: usize) -> i64;
-    fn uint64(&self, index: usize) -> u64;
-    fn int128(&self, index: usize) -> i128;
-    fn uint128(&self, index: usize) -> u128;
-    fn int256(&self, index: usize) -> &[u8];
-    fn uint256(&self, index: usize) -> &[u8];
+pub trait SolidityResult<'a> {
+    fn get_param<F: FromBytes<'a, F>>(&self, index: usize) -> Result<F>;
 }
 
-impl<T> SolidityResult for T
-where
-    T: AsRef<[u8]>,
-{
-    #[inline(always)]
-    fn int8(&self, index: usize) -> i8 {
-        self.as_ref()[index * 32 + 31] as i8
+impl<'a> SolidityResult<'a> for &'a [u8] {
+    fn get_param<F: FromBytes<'a, F>>(&self, index: usize) -> Result<F> {
+        F::from_bytes(&self, index)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::{i256, u256};
+
+    #[test]
+    #[rustfmt::skip]
+    fn decode_numbers() -> anyhow::Result<()> {
+        let bytes   = hex::decode("\
+00000000000000000000000000000000000000000000000000000000000000ff\
+00000000000000000000000000000000000000000000000000000000000000ff\
+000000000000000000000000000000000000000000000000000000000000ffff\
+000000000000000000000000000000000000000000000000000000000000ffff\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+").unwrap();
+
+        assert_eq!((&*bytes).get_param::<i8>(0)?,   0xffu8                                 as i8);
+        assert_eq!((&*bytes).get_param::<u8>(1)?,   0xffu8);
+        assert_eq!((&*bytes).get_param::<i16>(2)?,  0xffffu16                              as i16);
+        assert_eq!((&*bytes).get_param::<u16>(3)?,  0xffffu16);
+        assert_eq!((&*bytes).get_param::<i32>(4)?,  0xffffffffu32                          as i32);
+        assert_eq!((&*bytes).get_param::<u32>(5)?,  0xffffffffu32);
+        assert_eq!((&*bytes).get_param::<i64>(6)?,  0xffffffffffffffffu64                  as i64);
+        assert_eq!((&*bytes).get_param::<u64>(7)?,  0xffffffffffffffffu64);
+        assert_eq!((&*bytes).get_param::<i128>(8)?, 0xffffffffffffffffffffffffffffffffu128 as i128);
+        assert_eq!((&*bytes).get_param::<u128>(9)?, 0xffffffffffffffffffffffffffffffffu128);
+        
+        Ok(())
     }
 
-    #[inline(always)]
-    fn uint8(&self, index: usize) -> u8 {
-        self.as_ref()[index * 32 + 31]
+    #[test]
+    #[rustfmt::skip]
+    fn decode_numbers_array() -> anyhow::Result<()> {
+        let bytes   = hex::decode("\
+0000000000000000000000000000000000000000000000000000000000000180\
+00000000000000000000000000000000000000000000000000000000000001e0\
+0000000000000000000000000000000000000000000000000000000000000240\
+00000000000000000000000000000000000000000000000000000000000002a0\
+0000000000000000000000000000000000000000000000000000000000000300\
+0000000000000000000000000000000000000000000000000000000000000360\
+00000000000000000000000000000000000000000000000000000000000003c0\
+0000000000000000000000000000000000000000000000000000000000000420\
+0000000000000000000000000000000000000000000000000000000000000480\
+00000000000000000000000000000000000000000000000000000000000004e0\
+0000000000000000000000000000000000000000000000000000000000000540\
+00000000000000000000000000000000000000000000000000000000000005a0\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000000000000000000000000000000000ff\
+00000000000000000000000000000000000000000000000000000000000000ff\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000000000000000000000000000000000ff\
+00000000000000000000000000000000000000000000000000000000000000ff\
+0000000000000000000000000000000000000000000000000000000000000002\
+000000000000000000000000000000000000000000000000000000000000ffff\
+000000000000000000000000000000000000000000000000000000000000ffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+000000000000000000000000000000000000000000000000000000000000ffff\
+000000000000000000000000000000000000000000000000000000000000ffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+00000000000000000000000000000000000000000000000000000000ffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+000000000000000000000000000000000000000000000000ffffffffffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+00000000000000000000000000000000ffffffffffffffffffffffffffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+0000000000000000000000000000000000000000000000000000000000000002\
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+").unwrap();
+
+        assert_eq!((&*bytes).get_param::<Vec<i8>>(0)?,   &[0xffu8                                  as i8;   2]);
+        // Vec<u8> is unsupported because it fits solidity type `Bytes` better.
+        // assert_eq!((&*bytes).get_param::<Vec<u8>>(1)?,   &[0xffu8;                                 2]);
+        assert_eq!((&*bytes).get_param::<Vec<i16>>(2)?,  &[0xffffu16                               as i16;  2]);
+        assert_eq!((&*bytes).get_param::<Vec<u16>>(3)?,  &[0xffffu16;                              2]);
+        assert_eq!((&*bytes).get_param::<Vec<i32>>(4)?,  &[0xffffffffu32                           as i32;  2]);
+        assert_eq!((&*bytes).get_param::<Vec<u32>>(5)?,  &[0xffffffffu32;                          2]);
+        assert_eq!((&*bytes).get_param::<Vec<i64>>(6)?,  &[0xffffffffffffffffu64                   as i64;  2]);
+        assert_eq!((&*bytes).get_param::<Vec<u64>>(7)?,  &[0xffffffffffffffffu64;                  2]);
+        assert_eq!((&*bytes).get_param::<Vec<i128>>(8)?, &[0xffffffffffffffffffffffffffffffffu128  as i128; 2]);
+        assert_eq!((&*bytes).get_param::<Vec<u128>>(9)?, &[0xffffffffffffffffffffffffffffffffu128; 2]);
+        assert_eq!((&*bytes).get_param::<Vec<i256>>(10)?, &[i256([0xffu8; 32]); 2]);
+        assert_eq!((&*bytes).get_param::<Vec<u256>>(11)?, &[u256([0xffu8; 32]); 2]);
+        
+        Ok(())
     }
 
-    #[inline(always)]
-    fn int16(&self, index: usize) -> i16 {
-        BigEndian::read_i16(&self.as_ref()[index * 32 + 30..(index + 1) * 32])
+    #[test]
+    #[rustfmt::skip]
+    fn decode_string() -> anyhow::Result<()> {
+        let bytes   = hex::decode("\
+0000000000000000000000000000000000000000000000000000000000000040\
+0000000000000000000000000000000000000000000000000000000000000080\
+000000000000000000000000000000000000000000000000000000000000000d\
+72616e646f6d20737472696e6700000000000000000000000000000000000000\
+0000000000000000000000000000000000000000000000000000000000000016\
+776861742061626f757420616e6f74686572206f6e6500000000000000000000\
+").unwrap();
+        assert_eq!((&*bytes).get_param::<String>(0)?, "random string");
+        assert_eq!((&*bytes).get_param::<String>(1)?, "what about another one");
+
+        Ok(())
     }
 
-    #[inline(always)]
-    fn uint16(&self, index: usize) -> u16 {
-        BigEndian::read_u16(&self.as_ref()[index * 32 + 30..(index + 1) * 32])
-    }
+    #[test]
+    #[rustfmt::skip]
+    fn decode_string_array() -> anyhow::Result<()> {
+        let bytes   = hex::decode("\
+0000000000000000000000000000000000000000000000000000000000000020\
+0000000000000000000000000000000000000000000000000000000000000002\
+0000000000000000000000000000000000000000000000000000000000000040\
+0000000000000000000000000000000000000000000000000000000000000080\
+000000000000000000000000000000000000000000000000000000000000000d\
+72616e646f6d20737472696e6700000000000000000000000000000000000000\
+0000000000000000000000000000000000000000000000000000000000000016\
+776861742061626f757420616e6f74686572206f6e6500000000000000000000\
+").unwrap();
+        assert_eq!((&*bytes).get_param::<Vec<String>>(0)?, 
+            vec!["random string".to_owned(), "what about another one".to_owned()]);
 
-    #[inline(always)]
-    fn int32(&self, index: usize) -> i32 {
-        BigEndian::read_i32(&self.as_ref()[index * 32 + 28..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn uint32(&self, index: usize) -> u32 {
-        BigEndian::read_u32(&self.as_ref()[index * 32 + 28..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn int64(&self, index: usize) -> i64 {
-        BigEndian::read_i64(&self.as_ref()[index * 32 + 24..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn uint64(&self, index: usize) -> u64 {
-        BigEndian::read_u64(&self.as_ref()[index * 32 + 24..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn int128(&self, index: usize) -> i128 {
-        BigEndian::read_i128(&self.as_ref()[index * 32 + 24..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn uint128(&self, index: usize) -> u128 {
-        BigEndian::read_u128(&self.as_ref()[index * 32 + 24..(index + 1) * 32])
-    }
-
-    #[inline(always)]
-    fn int256(&self, index: usize) -> &[u8] {
-        &self.as_ref()[index * 32 + 24..(index + 1) * 32]
-    }
-
-    #[inline(always)]
-    fn uint256(&self, index: usize) -> &[u8] {
-        &self.as_ref()[index * 32 + 24..(index + 1) * 32]
+        Ok(())
     }
 }

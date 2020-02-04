@@ -1,6 +1,6 @@
-use super::from::FromBytes;
-use super::Error;
-use super::Result;
+use crate::from_bytes::FromBytes;
+use crate::Error;
+use crate::Result;
 use serde::de::{self, DeserializeSeed, SeqAccess, Visitor};
 use serde::Deserialize;
 use std::mem;
@@ -377,33 +377,33 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    #[rustfmt::skip]
-    fn de_string_array_test() -> Result<()> {
-        #[derive(Debug, Deserialize)]
-        struct Response {
-            strings: Vec<String>,
-        }
+    // #[test]
+    // #[rustfmt::skip]
+    // fn de_string_array_test() -> Result<()> {
+    //     #[derive(Debug, Deserialize)]
+    //     struct Response {
+    //         strings: Vec<String>,
+    //     }
 
-        let value = hex::decode(
-            "\
-0000000000000000000000000000000000000000000000000000000000000020\
-0000000000000000000000000000000000000000000000000000000000000002\
-0000000000000000000000000000000000000000000000000000000000000040\
-0000000000000000000000000000000000000000000000000000000000000080\
-000000000000000000000000000000000000000000000000000000000000000C\
-72616E646F6D2062797465730000000000000000000000000000000000000000\
-000000000000000000000000000000000000000000000000000000000000000C\
-72616E646F6D2062797465730000000000000000000000000000000000000000\
-",
-        )
-        .unwrap();
+    //     let value = hex::decode(
+    //         "\
+    // 0000000000000000000000000000000000000000000000000000000000000020\
+    // 0000000000000000000000000000000000000000000000000000000000000002\
+    // 0000000000000000000000000000000000000000000000000000000000000040\
+    // 0000000000000000000000000000000000000000000000000000000000000080\
+    // 000000000000000000000000000000000000000000000000000000000000000C\
+    // 72616E646F6D2062797465730000000000000000000000000000000000000000\
+    // 000000000000000000000000000000000000000000000000000000000000000C\
+    // 72616E646F6D2062797465730000000000000000000000000000000000000000\
+    // ",
+    //     )
+    //     .unwrap();
 
-        let value: Response = from_bytes(&value)?;
+    //     let value: Response = from_bytes(&value)?;
 
-        assert_eq!(value.strings.len(), 2);
-        // assert_eq!(value.string, "random bytes");
+    //     assert_eq!(value.strings.len(), 2);
+    //     // assert_eq!(value.string, "random bytes");
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 }

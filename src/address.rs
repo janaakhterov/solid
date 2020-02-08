@@ -1,6 +1,7 @@
 use std::convert::TryInto;
+use crate::encode::Encode;
 
-pub struct Address(pub Vec<u8>);
+pub struct Address(pub [u8; 32]);
 
 impl TryInto<Address> for &str {
     type Error = anyhow::Error;
@@ -16,7 +17,9 @@ impl TryInto<Address> for &str {
             )),
         }?;
 
-        Ok(Address(hex::decode(&s)?))
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(&hex::decode(&s)?);
+        Ok(Address(buf))
     }
 }
 
@@ -32,7 +35,9 @@ impl TryInto<Address> for &[u8] {
             )),
         }?;
 
-        Ok(Address(self.to_vec()))
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(&self);
+        Ok(Address(buf))
     }
 }
 
@@ -48,7 +53,9 @@ impl TryInto<Address> for &Vec<u8> {
             )),
         }?;
 
-        Ok(Address(self.clone()))
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(&self);
+        Ok(Address(buf))
     }
 }
 
@@ -64,6 +71,22 @@ impl TryInto<Address> for Vec<u8> {
             )),
         }?;
 
-        Ok(Address(self))
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(&self);
+        Ok(Address(buf))
+    }
+}
+
+impl Encode for Address {
+    fn encode(self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+
+    fn required_len(&self) -> u64 {
+        32
+    }
+
+    fn is_dynamic() -> bool {
+        false
     }
 }

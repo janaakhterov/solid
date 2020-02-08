@@ -1,6 +1,7 @@
 use std::convert::TryInto;
+use crate::encode::Encode;
 
-pub struct Function(pub Vec<u8>);
+pub struct Function(pub [u8; 32]);
 
 impl TryInto<Function> for &str {
     type Error = anyhow::Error;
@@ -16,7 +17,9 @@ impl TryInto<Function> for &str {
             )),
         }?;
 
-        Ok(Function(hex::decode(&s)?))
+        let mut buf = [0u8; 32];
+        buf[8..].copy_from_slice(&hex::decode(&s)?);
+        Ok(Function(buf))
     }
 }
 
@@ -32,7 +35,9 @@ impl TryInto<Function> for &[u8] {
             )),
         }?;
 
-        Ok(Function(self.to_vec()))
+        let mut buf = [0u8; 32];
+        buf[8..].copy_from_slice(&self);
+        Ok(Function(buf))
     }
 }
 
@@ -48,7 +53,9 @@ impl TryInto<Function> for &Vec<u8> {
             )),
         }?;
 
-        Ok(Function(self.clone()))
+        let mut buf = [0u8; 32];
+        buf[8..].copy_from_slice(&self);
+        Ok(Function(buf))
     }
 }
 
@@ -64,6 +71,22 @@ impl TryInto<Function> for Vec<u8> {
             )),
         }?;
 
-        Ok(Function(self))
+        let mut buf = [0u8; 32];
+        buf[8..].copy_from_slice(&self);
+        Ok(Function(buf))
+    }
+}
+
+impl Encode for Function {
+    fn encode(self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+
+    fn required_len(&self) -> u64 {
+        32
+    }
+
+    fn is_dynamic() -> bool {
+        false
     }
 }

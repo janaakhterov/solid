@@ -263,3 +263,11 @@ fn hex_test() -> Result<(), anyhow::Error> {
 
     Ok(())
 }
+
+#[test]
+#[rustfmt::skip]
+fn tuple_test() -> Result<(), anyhow::Error> {
+    let buf = Builder::new().add((0xffu8, 0xaabbu16)).build();
+
+    Ok(())
+}

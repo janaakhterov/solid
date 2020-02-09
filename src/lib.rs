@@ -24,3 +24,4 @@ pub mod selector;
 pub mod error;
 pub mod builder;
 pub mod test;
+pub mod tuples;

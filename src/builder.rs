@@ -51,13 +51,8 @@ impl Builder {
         let mut buf: Vec<u8> = vec![0; total_len + name_offset];
 
         let mut offset: usize = self.params.len() * 32 + name_offset;
-        println!("[Builder] buf.len: {}", buf.len());
 
         for (index, (dynamic, bytes)) in self.params.into_iter().enumerate() {
-            println!("[Builder] index: {}", index);
-            println!("[Builder] offset: {}", offset);
-            println!("[Builder] dynamic: {}", dynamic);
-            println!("[Builder] bytes.len: {}", bytes.len());
             if dynamic {
                 buf[index * 32 + 24 + name_offset..(index + 1) * 32 + name_offset]
                     .copy_from_slice(&(offset as u64).to_be_bytes());

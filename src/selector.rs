@@ -1,42 +1,28 @@
+use sha3::{Digest, Keccak256};
+use crate::into_type::IntoType;
+
 pub struct Selector {
-    name: Option<String>,
     params: Vec<String>,
 }
 
 impl Selector {
     pub fn new() -> Self {
         Selector {
-            name: None,
             params: Vec::new(),
         }
     }
 
-    pub fn name(mut self, name: String) -> Self {
-        self.name = Some(name);
+    pub fn add<T: IntoType>(mut self) -> Self {
+        self.params.push(T::into_type());
         self
     }
+
+    pub fn build(self, name: String) -> [u8; 4] {
+        let signature = format!("{}({})", name, self.params.join(","));
+        let mut sig = [0; 4];
+        let mut hasher = Keccak256::new();
+        hasher.input(&signature);
+        sig.copy_from_slice(&hasher.result());
+        sig
+    }
 }
-
-#[macro_use]
-macro_rules! impl_solidity_function_for_selector {
-    ($ty: ty => $function: ident | $array: ident) => {
-        impl Selector {
-            pub fn $function(mut self) -> Self {
-                self.params.push(stringify!($ty).to_owned());
-                self
-            }
-
-            pub fn $array(mut self, dimensions: std::num::NonZeroUsize) -> Self {
-                let param = format!(
-                    "{}{}",
-                    stringify!($ty).to_owned(),
-                    "[]".repeat(dimensions.get())
-                );
-                self.params.push(param);
-                self
-            }
-        }
-    };
-}
-
-impl_solidity_function_for_selector!(i8 => add_i8 | add_i8_array);

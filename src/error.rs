@@ -12,6 +12,7 @@ pub enum Error {
     TryIntoSliceError(#[from] std::array::TryFromSliceError),
     Utf8Error(#[from] std::str::Utf8Error),
     FromUtf8Error(#[from] FromUtf8Error),
+    FromHexError(#[from] hex::FromHexError),
 }
 
 impl ser::Error for Error {

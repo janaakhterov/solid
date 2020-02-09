@@ -4,75 +4,53 @@ use crate::encode::Encode;
 pub struct Function(pub [u8; 32]);
 
 impl TryInto<Function> for &str {
-    type Error = anyhow::Error;
+    type Error = crate::error::Error;
 
-    fn try_into(self) -> Result<Function, anyhow::Error> {
+    fn try_into(self) -> Result<Function, Self::Error> {
         // Remove the `0x` prefix if the length suggests that.
         let s = match self.len() {
-            48 => Ok(self),
-            50 => Ok(self.split_at(2).1),
-            length => Err(anyhow!(
-                "Function string length expected to be 48 or 50, received: {}",
-                length
-            )),
-        }?;
+            48 => self,
+            50 => self.split_at(2).1,
+            _ => self
+        };
 
+        let slice = hex::decode(&s)?;
+        let slice: [u8; 24] = slice.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&hex::decode(&s)?);
+        buf[8..].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
 
 impl TryInto<Function> for &[u8] {
-    type Error = anyhow::Error;
+    type Error = crate::error::Error;
 
-    fn try_into(self) -> Result<Function, anyhow::Error> {
-        match self.len() {
-            24 => Ok(()),
-            length => Err(anyhow!(
-                "Function slice length expected to be 24, received: {}",
-                length
-            )),
-        }?;
-
+    fn try_into(self) -> Result<Function, Self::Error> {
+        let slice: [u8; 24] = self.try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&self);
+        buf[8..].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
 
 impl TryInto<Function> for &Vec<u8> {
-    type Error = anyhow::Error;
+    type Error = crate::error::Error;
 
-    fn try_into(self) -> Result<Function, anyhow::Error> {
-        match self.len() {
-            24 => Ok(()),
-            length => Err(anyhow!(
-                "Function vec length expected to be 24, received: {}",
-                length
-            )),
-        }?;
-
+    fn try_into(self) -> Result<Function, Self::Error> {
+        let slice: [u8; 24] = self.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&self);
+        buf[8..].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
 
 impl TryInto<Function> for Vec<u8> {
-    type Error = anyhow::Error;
+    type Error = crate::error::Error;
 
-    fn try_into(self) -> Result<Function, anyhow::Error> {
-        match self.len() {
-            24 => Ok(()),
-            length => Err(anyhow!(
-                "Function vec length expected to be 24, received: {}",
-                length
-            )),
-        }?;
-
+    fn try_into(self) -> Result<Function, Self::Error> {
+        let slice: [u8; 24] = self.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&self);
+        buf[8..].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }

@@ -9,16 +9,15 @@ impl TryInto<Address> for &str {
     fn try_into(self) -> Result<Address, anyhow::Error> {
         // Remove the `0x` prefix if the length suggests that.
         let s = match self.len() {
-            40 => Ok(self),
-            42 => Ok(self.split_at(2).1),
-            length => Err(anyhow!(
-                "Address string length expected to be 40 or 42, received: {}",
-                length
-            )),
-        }?;
+            40 => self,
+            42 => self.split_at(2).1,
+            _ => self,
+        };
 
+        let slice = hex::decode(&s)?;
+        let slice: [u8; 24] = slice.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[12..].copy_from_slice(&hex::decode(&s)?);
+        buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }
@@ -27,16 +26,9 @@ impl TryInto<Address> for &[u8] {
     type Error = anyhow::Error;
 
     fn try_into(self) -> Result<Address, anyhow::Error> {
-        match self.len() {
-            20 => Ok(()),
-            length => Err(anyhow!(
-                "Address string length expected to be 20, received: {}",
-                length
-            )),
-        }?;
-
+        let slice: [u8; 24] = self.try_into()?;
         let mut buf = [0u8; 32];
-        buf[12..].copy_from_slice(&self);
+        buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }
@@ -45,16 +37,9 @@ impl TryInto<Address> for &Vec<u8> {
     type Error = anyhow::Error;
 
     fn try_into(self) -> Result<Address, anyhow::Error> {
-        match self.len() {
-            20 => Ok(()),
-            length => Err(anyhow!(
-                "Address string length expected to be 20, received: {}",
-                length
-            )),
-        }?;
-
+        let slice: [u8; 24] = self.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[12..].copy_from_slice(&self);
+        buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }
@@ -63,16 +48,9 @@ impl TryInto<Address> for Vec<u8> {
     type Error = anyhow::Error;
 
     fn try_into(self) -> Result<Address, anyhow::Error> {
-        match self.len() {
-            20 => Ok(()),
-            length => Err(anyhow!(
-                "Address string length expected to be 20, received: {}",
-                length
-            )),
-        }?;
-
+        let slice: [u8; 24] = self.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[12..].copy_from_slice(&self);
+        buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }

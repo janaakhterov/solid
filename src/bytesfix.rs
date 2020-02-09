@@ -37,7 +37,9 @@ macro_rules! impl_encode_bytesfix {
     ($ty: ty) => {
         impl Encode for $ty {
             fn encode(self) -> Vec<u8> {
-                self.0.to_vec()
+                let mut buf = vec![0u8; 32];
+                buf[0..self.0.len()].copy_from_slice(&self.0);
+                buf
             }
 
             fn required_len(&self) -> u64 {

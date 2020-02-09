@@ -31,10 +31,7 @@ impl Builder {
     }
 
     pub fn build(self) -> Vec<u8> {
-        let name_offset = match self.name {
-            None => 0,
-            Some(_) => 4,
-        };
+        let name_offset = if let Some(_) = self.name { 4 } else { 0 };
 
         let sig = if let Some(name) = self.name {
             Some(self.selector.build(name))
@@ -42,17 +39,29 @@ impl Builder {
             None
         };
 
-        let total_len =
-            self.params.iter().map(|param| param.1.len()).sum::<usize>() + self.params.len() * 32;
+        let total_len = self.params.iter().map(|param| param.1.len()).sum::<usize>()
+            + self
+                .params
+                .iter()
+                .map(|param| param.0)
+                .filter(|&param| param == true)
+                .count()
+                * 32;
+
         let mut buf: Vec<u8> = vec![0; total_len + name_offset];
 
         let mut offset: usize = self.params.len() * 32 + name_offset;
+        println!("[Builder] buf.len: {}", buf.len());
 
         for (index, (dynamic, bytes)) in self.params.into_iter().enumerate() {
+            println!("[Builder] index: {}", index);
+            println!("[Builder] offset: {}", offset);
+            println!("[Builder] dynamic: {}", dynamic);
+            println!("[Builder] bytes.len: {}", bytes.len());
             if dynamic {
-                buf[index * 32 + 24 + name_offset..(index + 1) + 32 + name_offset]
+                buf[index * 32 + 24 + name_offset..(index + 1) * 32 + name_offset]
                     .copy_from_slice(&(offset as u64).to_be_bytes());
-                buf[offset + name_offset..offset + bytes.len() + name_offset]
+                buf[offset + name_offset..offset + name_offset + bytes.len()]
                     .copy_from_slice(&bytes);
                 offset += bytes.len()
             } else {

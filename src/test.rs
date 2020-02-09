@@ -1,19 +1,28 @@
-use crate::builder::Builder;
+#[cfg(test)]
+use crate::{
+    builder::Builder,
+    bytes::Bytes,
+    bytesfix::Bytes4,
+    address::Address,
+    function::Function,
+};
+#[cfg(test)]
+use std::convert::TryFrom;
 
 #[test]
 #[rustfmt::skip]
 fn number_test() {
     let buf = Builder::new()
-        .add_i8(0xffu8 as i8)
-        .add_u8(0xffu8)
-        .add_i16(0xffffu16 as i16)
-        .add_u16(0xffffu16)
-        .add_i32(0xffffffffu32 as i32)
-        .add_u32(0xffffffffu32)
-        .add_i64(0xffffffffffffffffu64 as i64)
-        .add_u64(0xffffffffffffffffu64)
-        .add_i128(0xffffffffffffffffffffffffffffffffu128 as i128)
-        .add_u128(0xffffffffffffffffffffffffffffffffu128)
+        .add(0xffu8 as i8)
+        .add(0xffu8)
+        .add(0xffffu16 as i16)
+        .add(0xffffu16)
+        .add(0xffffffffu32 as i32)
+        .add(0xffffffffu32)
+        .add(0xffffffffffffffffu64 as i64)
+        .add(0xffffffffffffffffu64)
+        .add(0xffffffffffffffffffffffffffffffffu128 as i128)
+        .add(0xffffffffffffffffffffffffffffffffu128)
         .build();
     let first = hex::decode("00000000000000000000000000000000000000000000000000000000000000ff").unwrap();
     let second = hex::decode("00000000000000000000000000000000000000000000000000000000000000ff").unwrap();
@@ -41,7 +50,7 @@ fn number_test() {
 #[test]
 #[rustfmt::skip]
 fn byte_test() {
-    let buf = Builder::new().add_bytes("random bytes".as_bytes()).build();
+    let buf = Builder::new().add(Bytes("random bytes".as_bytes().to_vec())).build();
     let first_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let first_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000c").unwrap();
     let first_data = hex::decode("72616E646F6D206279746573000000000000000000000000000000000000000000").unwrap();
@@ -55,10 +64,10 @@ fn byte_test() {
 #[test]
 #[rustfmt::skip]
 fn string_test() {
-    let buf = Builder::new().add_string("random bytes").build();
+    let buf = Builder::new().add("random bytes".to_string()).build();
     let first_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let first_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000c").unwrap();
-    let first_data = hex::decode("72616E646F6D206279746573000000000000000000000000000000000000000000").unwrap();
+    let first_data = hex::decode("72616e646f6d206279746573000000000000000000000000000000000000000000").unwrap();
 
     assert_eq!(96, buf.len());
     assert_eq!(&first_offset[0..32], &buf[32 * 0..32 * 1]);
@@ -69,7 +78,7 @@ fn string_test() {
 #[test]
 #[rustfmt::skip]
 fn byte_n_test() {
-    let buf = Builder::new().add_bytes_4(&[0xff; 4]).build();
+    let buf = Builder::new().add(Bytes4([0xff; 4])).build();
     let first = hex::decode("ffffffff00000000000000000000000000000000000000000000000000000000").unwrap();
 
     assert_eq!(32, buf.len());
@@ -80,16 +89,16 @@ fn byte_n_test() {
 #[rustfmt::skip]
 fn array_number_test() {
     let buf = Builder::new()
-        .add(&[0xffu8 as i8; 2].to_vec())
-        .add(&[0xffu8; 2].to_vec())
-        .add(&[0xffffu16 as i16; 2].to_vec())
-        .add(&[0xffffu16; 2].to_vec())
-        .add(&[0xffffffffu32 as i32; 2].to_vec())
-        .add(&[0xffffffffu32; 2].to_vec())
-        .add(&[0xffffffffffffffffu64 as i64; 2].to_vec())
-        .add(&[0xffffffffffffffffu64; 2].to_vec())
-        .add(&[0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
-        .add(&[0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
+        .add([0xffu8 as i8; 2].to_vec())
+        .add([0xffu8; 2].to_vec())
+        .add([0xffffu16 as i16; 2].to_vec())
+        .add([0xffffu16; 2].to_vec())
+        .add([0xffffffffu32 as i32; 2].to_vec())
+        .add([0xffffffffu32; 2].to_vec())
+        .add([0xffffffffffffffffu64 as i64; 2].to_vec())
+        .add([0xffffffffffffffffu64; 2].to_vec())
+        .add([0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
+        .add([0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
         .build();
 
     let i8_offset   = hex::decode("0000000000000000000000000000000000000000000000000000000000000140").unwrap();
@@ -180,22 +189,22 @@ fn array_number_test() {
 #[rustfmt::skip]
 fn bytes_array_test() {
     let buf = Builder::new()
-        .add(&[[0xaau8; 16].to_vec().as_slice(), [0xffu8; 16].to_vec().as_slice()].to_vec())
-        .add(&vec!["random string", "what about another one"])
+        .add(vec![Bytes([0xaau8; 16].to_vec()), Bytes([0xffu8; 16].to_vec())])
+        .add(vec!["random string".to_string(), "what about another one".to_string()])
         .build();
 
     let bytes_array_offset    = hex::decode("0000000000000000000000000000000000000000000000000000000000000040").unwrap();
     let string_array_offset   = hex::decode("0000000000000000000000000000000000000000000000000000000000000120").unwrap();
     let bytes_array_len       = hex::decode("0000000000000000000000000000000000000000000000000000000000000002").unwrap();
-    let bytes_array_1_offset  = hex::decode("0000000000000000000000000000000000000000000000000000000000000060").unwrap();
-    let bytes_array_2_offset  = hex::decode("00000000000000000000000000000000000000000000000000000000000000a0").unwrap();
+    let bytes_array_1_offset  = hex::decode("0000000000000000000000000000000000000000000000000000000000000040").unwrap();
+    let bytes_array_2_offset  = hex::decode("0000000000000000000000000000000000000000000000000000000000000080").unwrap();
     let bytes_array_1_len     = hex::decode("0000000000000000000000000000000000000000000000000000000000000010").unwrap();
     let bytes_array_1_bytes   = hex::decode("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000000000000").unwrap();
     let bytes_array_2_len     = hex::decode("0000000000000000000000000000000000000000000000000000000000000010").unwrap();
     let bytes_array_2_bytes   = hex::decode("ffffffffffffffffffffffffffffffff00000000000000000000000000000000").unwrap();
     let string_array_len      = hex::decode("0000000000000000000000000000000000000000000000000000000000000002").unwrap();
-    let string_array_1_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000060").unwrap();
-    let string_array_2_offset = hex::decode("00000000000000000000000000000000000000000000000000000000000000a0").unwrap();
+    let string_array_1_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000040").unwrap();
+    let string_array_2_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000080").unwrap();
     let string_array_1_len    = hex::decode("000000000000000000000000000000000000000000000000000000000000000d").unwrap();
     let string_array_1_bytes  = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000").unwrap();
     let string_array_2_len    = hex::decode("0000000000000000000000000000000000000000000000000000000000000016").unwrap();
@@ -222,7 +231,7 @@ fn bytes_array_test() {
 #[test]
 #[rustfmt::skip]
 fn address_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add_address(&[0xffu8; 20][..])?.build();
+    let buf = Builder::new().add(Address::try_from(&[0xffu8; 20][..])?).build();
 
     let address = hex::decode("000000000000000000000000ffffffffffffffffffffffffffffffffffffffff").unwrap();
 
@@ -234,7 +243,7 @@ fn address_test() -> Result<(), anyhow::Error> {
 #[test]
 #[rustfmt::skip]
 fn function_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add_function(&[0xffu8; 24][..])?.build();
+    let buf = Builder::new().add(Function::try_from(&[0xffu8; 24][..])?).build();
 
     let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
 
@@ -246,7 +255,7 @@ fn function_test() -> Result<(), anyhow::Error> {
 #[test]
 #[rustfmt::skip]
 fn hex_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add_function("0xffffffffffffffffffffffffffffffffffffffffffffffff")?.build();
+    let buf = Builder::new().add(Function::try_from("0xffffffffffffffffffffffffffffffffffffffffffffffff")?).build();
 
     let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
 

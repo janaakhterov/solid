@@ -1,17 +1,20 @@
+use std::convert::TryFrom;
 use std::convert::TryInto;
 use crate::encode::Encode;
+use crate::into_type::IntoType;
+use crate::Error;
 
 pub struct Address(pub [u8; 32]);
 
-impl TryInto<Address> for &str {
-    type Error = anyhow::Error;
+impl TryFrom<&str> for Address {
+    type Error = Error;
 
-    fn try_into(self) -> Result<Address, anyhow::Error> {
+    fn try_from(value: &str) -> Result<Address, crate::Error> {
         // Remove the `0x` prefix if the length suggests that.
-        let s = match self.len() {
-            40 => self,
-            42 => self.split_at(2).1,
-            _ => self,
+        let s = match value.len() {
+            40 => value,
+            42 => value.split_at(2).1,
+            _ => value,
         };
 
         let slice = hex::decode(&s)?;
@@ -22,33 +25,33 @@ impl TryInto<Address> for &str {
     }
 }
 
-impl TryInto<Address> for &[u8] {
-    type Error = anyhow::Error;
+impl TryFrom<&[u8]> for Address {
+    type Error = Error;
 
-    fn try_into(self) -> Result<Address, anyhow::Error> {
-        let slice: [u8; 24] = self.try_into()?;
+    fn try_from(value: &[u8]) -> Result<Address, crate::Error> {
+        let slice: [u8; 20] = value.try_into()?;
         let mut buf = [0u8; 32];
         buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }
 
-impl TryInto<Address> for &Vec<u8> {
-    type Error = anyhow::Error;
+impl TryFrom<&Vec<u8>> for Address {
+    type Error = Error;
 
-    fn try_into(self) -> Result<Address, anyhow::Error> {
-        let slice: [u8; 24] = self.as_slice().try_into()?;
+    fn try_from(value: &Vec<u8>) -> Result<Address, crate::Error> {
+        let slice: [u8; 20] = value.as_slice().try_into()?;
         let mut buf = [0u8; 32];
         buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
     }
 }
 
-impl TryInto<Address> for Vec<u8> {
-    type Error = anyhow::Error;
+impl TryFrom<Vec<u8>> for Address {
+    type Error = Error;
 
-    fn try_into(self) -> Result<Address, anyhow::Error> {
-        let slice: [u8; 24] = self.as_slice().try_into()?;
+    fn try_from(value: Vec<u8>) -> Result<Address, crate::Error> {
+        let slice: [u8; 20] = value.as_slice().try_into()?;
         let mut buf = [0u8; 32];
         buf[12..].copy_from_slice(&slice);
         Ok(Address(buf))
@@ -66,5 +69,11 @@ impl Encode for Address {
 
     fn is_dynamic() -> bool {
         false
+    }
+}
+
+impl IntoType for Address {
+    fn into_type() -> String {
+        "address".to_string()
     }
 }

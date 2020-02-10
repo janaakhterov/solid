@@ -1,9 +1,19 @@
-use crate::from_bytes::FromBytes;
-use crate::Error;
-use crate::Result;
-use serde::de::{self, DeserializeSeed, SeqAccess, Visitor};
-use serde::Deserialize;
-use std::mem;
+use crate::{
+    Error,
+    decode::Decode,
+    encode::Encode,
+    Result,
+    bytes::Bytes,
+};
+use serde::{
+    de::{
+        self,
+        DeserializeSeed,
+        SeqAccess,
+        Visitor,
+    },
+    Deserialize,
+};
 
 pub struct Deserializer<'de> {
     buf: &'de [u8],
@@ -30,56 +40,19 @@ where
 }
 
 impl<'de> Deserializer<'de> {
-    fn next_block(&mut self) -> Result<&'de [u8]> {
-        if let (Some(_), Some(_)) = (
-            self.buf.get(self.index * 32),
-            self.buf.get((self.index + 1) * 32 - 1),
-        ) {
-            let buf = &self.buf[self.index * 32..(self.index + 1) * 32];
-            self.index += 1;
-            Ok(&buf)
-        } else {
-            Err(Error::Eof)
-        }
-    }
-
-    // Parse the JSON identifier `true` or `false`.
-    fn parse_bool(&mut self) -> Result<bool> {
-        Ok(self.next_block()?[31] == 1)
-    }
-
-    fn parse_number<T>(&mut self) -> Result<T>
+    fn decode<T>(&mut self) -> Result<T>
     where
-        T: FromBytes<'de, T>,
+        T: Decode<'de> + Encode,
     {
-        let block = self.next_block()?;
-        T::from_bytes(&block[32 - mem::size_of::<T>()..32])
-    }
-
-    fn parse_string(&mut self) -> Result<&'de str> {
-        Ok(std::str::from_utf8(&self.parse_bytes()?)?)
-    }
-
-    fn parse_bytes(&mut self) -> Result<&'de [u8]> {
-        let offset = self.parse_number::<usize>()?;
-        println!("[parse_bytes] offset: {}", offset);
-        println!(
-            "[parse_bytes] len: {}",
-            usize::from_bytes(&self.buf[offset + 32 - mem::size_of::<usize>()..offset + 32])?
-        );
-        println!("[parse_bytes] buf: {:?}", &self.buf[..]);
-        match (
-            self.buf.get(offset),
-            usize::from_bytes(&self.buf[offset + 32 - mem::size_of::<usize>()..offset + 32])?,
-        ) {
-            (Some(_), len) if self.buf.get(offset + len).is_some() => {
-                Ok(&self.buf[offset + 32..offset + 32 + len])
-            }
-
-            _ => Err(Error::Message(
-                "Failed to parse string because buffer doesn't contain entire string".to_string(),
-            )),
-        }
+        println!("[Deserialize] dyanmic: {}", T::is_dynamic());
+        let value = if T::is_dynamic() {
+            let offset = u64::decode(&self.buf[self.index * 32..(self.index + 1) * 32]);
+            T::decode(&self.buf[offset as usize..])
+        } else {
+            T::decode(&self.buf[self.index * 32..(self.index + 1) * 32])
+        };
+        self.index += 1;
+        Ok(value)
     }
 }
 
@@ -91,47 +64,58 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     }
 
     fn deserialize_bool<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_bool(self.parse_bool()?)
+        println!("[Deserialize] i8");
+        visitor.visit_bool(self.decode::<bool>()?)
     }
 
     fn deserialize_i8<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_i8(self.parse_number::<i8>()?)
+        println!("[Deserialize] i8");
+        visitor.visit_i8(self.decode::<i8>()?)
     }
 
     fn deserialize_i16<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_i16(self.parse_number::<i16>()?)
+        println!("[Deserialize] i16");
+        visitor.visit_i16(self.decode::<i16>()?)
     }
 
     fn deserialize_i32<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_i32(self.parse_number::<i32>()?)
+        println!("[Deserialize] i32");
+        visitor.visit_i32(self.decode::<i32>()?)
     }
 
     fn deserialize_i64<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_i64(self.parse_number::<i64>()?)
+        println!("[Deserialize] i64");
+        visitor.visit_i64(self.decode::<i64>()?)
     }
 
     fn deserialize_i128<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_i128(self.parse_number::<i128>()?)
+        println!("[Deserialize] i128");
+        visitor.visit_i128(self.decode::<i128>()?)
     }
 
     fn deserialize_u8<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_u8(self.parse_number::<u8>()?)
+        println!("[Deserialize] u8");
+        visitor.visit_u8(self.decode::<u8>()?)
     }
 
     fn deserialize_u16<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_u16(self.parse_number::<u16>()?)
+        println!("[Deserialize] u16");
+        visitor.visit_u16(self.decode::<u16>()?)
     }
 
     fn deserialize_u32<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_u32(self.parse_number::<u32>()?)
+        println!("[Deserialize] u32");
+        visitor.visit_u32(self.decode::<u32>()?)
     }
 
     fn deserialize_u64<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_u64(self.parse_number::<u64>()?)
+        println!("[Deserialize] u64");
+        visitor.visit_u64(self.decode::<u64>()?)
     }
 
     fn deserialize_u128<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_u128(self.parse_number::<u128>()?)
+        println!("[Deserialize] u128");
+        visitor.visit_u128(self.decode::<u128>()?)
     }
 
     // UNSUPPORTED
@@ -150,21 +134,25 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     }
 
     fn deserialize_str<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_borrowed_str(self.parse_string()?)
+        unimplemented!();
+        // visitor.visit_borrowed_str(&self.decode::<String>()?)
     }
 
     fn deserialize_string<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        self.deserialize_str(visitor)
+        println!("[Deserialize] String");
+        visitor.visit_string(self.decode::<String>()?)
     }
 
     fn deserialize_byte_buf<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        visitor.visit_borrowed_bytes(self.parse_bytes()?)
+        println!("[Deserialize] BytesBuf");
+        visitor.visit_byte_buf(self.decode::<Bytes>()?.0.to_vec())
     }
 
     // The `Serializer` implementation on the previous page serialized byte
     // arrays as JSON arrays of bytes. Handle that representation here.
     fn deserialize_bytes<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        self.deserialize_byte_buf(visitor)
+        println!("[Deserialize] Bytes");
+        visitor.visit_borrowed_bytes(&self.decode::<Bytes>()?.0)
     }
 
     // An absent optional is represented as the JSON `null` and a present
@@ -217,9 +205,8 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // As indicated by the length parameter, the `Deserialize` implementation
     // for a tuple in the Serde data model is required to know the length of the
     // tuple before even looking at the input data.
-    fn deserialize_tuple<V: Visitor<'de>>(self, _len: usize, _visitor: V) -> Result<V::Value> {
-        // self.deserialize_seq(visitor)
-        unimplemented!()
+    fn deserialize_tuple<V: Visitor<'de>>(self, _len: usize, visitor: V) -> Result<V::Value> {
+        self.deserialize_seq(visitor)
     }
 
     // Tuple structs look just like sequences in JSON.
@@ -350,7 +337,7 @@ mod test {
     fn de_string_test() -> Result<()> {
         #[derive(Debug, Deserialize)]
         struct Response<'a> {
-            string: &'a str,
+            string: String,
             bytes: &'a [u8],
         }
 
@@ -377,33 +364,33 @@ mod test {
         Ok(())
     }
 
-    // #[test]
-    // #[rustfmt::skip]
-    // fn de_string_array_test() -> Result<()> {
-    //     #[derive(Debug, Deserialize)]
-    //     struct Response {
-    //         strings: Vec<String>,
-    //     }
+    #[test]
+    #[rustfmt::skip]
+    fn de_string_array_test() -> Result<()> {
+        #[derive(Debug, Deserialize)]
+        struct Response {
+            strings: Vec<String>,
+        }
 
-    //     let value = hex::decode(
-    //         "\
-    // 0000000000000000000000000000000000000000000000000000000000000020\
-    // 0000000000000000000000000000000000000000000000000000000000000002\
-    // 0000000000000000000000000000000000000000000000000000000000000040\
-    // 0000000000000000000000000000000000000000000000000000000000000080\
-    // 000000000000000000000000000000000000000000000000000000000000000C\
-    // 72616E646F6D2062797465730000000000000000000000000000000000000000\
-    // 000000000000000000000000000000000000000000000000000000000000000C\
-    // 72616E646F6D2062797465730000000000000000000000000000000000000000\
-    // ",
-    //     )
-    //     .unwrap();
+        let value = hex::decode(
+            "\
+    0000000000000000000000000000000000000000000000000000000000000020\
+    0000000000000000000000000000000000000000000000000000000000000002\
+    0000000000000000000000000000000000000000000000000000000000000040\
+    0000000000000000000000000000000000000000000000000000000000000080\
+    000000000000000000000000000000000000000000000000000000000000000C\
+    72616E646F6D2062797465730000000000000000000000000000000000000000\
+    000000000000000000000000000000000000000000000000000000000000000C\
+    72616E646F6D2062797465730000000000000000000000000000000000000000\
+    ",
+        )
+        .unwrap();
 
-    //     let value: Response = from_bytes(&value)?;
+        let value: Response = from_bytes(&value)?;
 
-    //     assert_eq!(value.strings.len(), 2);
-    //     // assert_eq!(value.string, "random bytes");
+        assert_eq!(value.strings.len(), 2);
+        // assert_eq!(value.string, "random bytes");
 
-    //     Ok(())
-    // }
+        Ok(())
+    }
 }

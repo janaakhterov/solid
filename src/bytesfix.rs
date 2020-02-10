@@ -1,4 +1,6 @@
 use crate::encode::Encode;
+use crate::decode::Decode;
+use std::convert::TryInto;
 
 pub struct Bytes1(pub [u8; 1]);
 pub struct Bytes2(pub [u8; 2]);
@@ -34,7 +36,7 @@ pub struct Bytes31(pub [u8; 31]);
 pub struct Bytes32(pub [u8; 32]);
 
 macro_rules! impl_encode_bytesfix {
-    ($ty: ty) => {
+    ($ty: ident) => {
         impl Encode for $ty {
             fn encode(self) -> Vec<u8> {
                 let mut buf = vec![0u8; 32];
@@ -48,6 +50,12 @@ macro_rules! impl_encode_bytesfix {
 
             fn is_dynamic() -> bool {
                 false
+            }
+        }
+
+        impl<'a> Decode<'a> for $ty {
+            fn decode(buf: &'a [u8]) -> Self {
+                $ty(buf[0..32].try_into().unwrap())
             }
         }
     }

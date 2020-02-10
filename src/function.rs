@@ -1,8 +1,13 @@
-use std::convert::TryInto;
-use std::convert::TryFrom;
-use crate::encode::Encode;
-use crate::into_type::IntoType;
-use crate::Error;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+    into_type::IntoType,
+    Error,
+};
+use std::convert::{
+    TryFrom,
+    TryInto,
+};
 
 pub struct Function(pub [u8; 32]);
 
@@ -14,7 +19,7 @@ impl TryFrom<&str> for Function {
         let s = match value.len() {
             48 => value,
             50 => value.split_at(2).1,
-            _ => value
+            _ => value,
         };
 
         let slice = hex::decode(&s)?;
@@ -69,6 +74,12 @@ impl Encode for Function {
 
     fn is_dynamic() -> bool {
         false
+    }
+}
+
+impl<'a> Decode<'a> for Function {
+    fn decode(buf: &'a [u8]) -> Self {
+        Function(buf[0..32].try_into().unwrap())
     }
 }
 

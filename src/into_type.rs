@@ -67,7 +67,7 @@ impl IntoType for u128 {
     }
 }
 
-impl IntoType for Bytes {
+impl<'a> IntoType for Bytes<'a> {
     fn into_type() -> String {
         "bytes".to_string()
     }

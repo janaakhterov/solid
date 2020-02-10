@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 use std::convert::TryInto;
 use crate::encode::Encode;
+use crate::decode::Decode;
 use crate::into_type::IntoType;
 use crate::Error;
 
@@ -69,6 +70,12 @@ impl Encode for Address {
 
     fn is_dynamic() -> bool {
         false
+    }
+}
+
+impl<'a> Decode<'a> for Address {
+    fn decode(buf: &'a [u8]) -> Self {
+        Address(buf[0..32].try_into().unwrap())
     }
 }
 

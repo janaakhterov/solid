@@ -1,5 +1,11 @@
-use crate::encode::Encode;
-use std::mem;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+};
+use std::{
+    convert::TryInto,
+    mem,
+};
 
 macro_rules! impl_encode {
     ($ty: ty) => {
@@ -31,6 +37,66 @@ impl_encode!(i64);
 impl_encode!(u64);
 impl_encode!(i128);
 impl_encode!(u128);
+
+impl<'a> Decode<'a> for i8 {
+    fn decode(buf: &'a [u8]) -> Self {
+        buf[31] as i8
+    }
+}
+
+impl<'a> Decode<'a> for u8 {
+    fn decode(buf: &'a [u8]) -> Self {
+        buf[31]
+    }
+}
+
+impl<'a> Decode<'a> for i16 {
+    fn decode(buf: &'a [u8]) -> Self {
+        i16::from_be_bytes(buf[30..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for u16 {
+    fn decode(buf: &'a [u8]) -> Self {
+        u16::from_be_bytes(buf[30..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for i32 {
+    fn decode(buf: &'a [u8]) -> Self {
+        i32::from_be_bytes(buf[28..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for u32 {
+    fn decode(buf: &'a [u8]) -> Self {
+        u32::from_be_bytes(buf[28..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for i64 {
+    fn decode(buf: &'a [u8]) -> Self {
+        i64::from_be_bytes(buf[24..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for u64 {
+    fn decode(buf: &'a [u8]) -> Self {
+        u64::from_be_bytes(buf[24..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for i128 {
+    fn decode(buf: &'a [u8]) -> Self {
+        i128::from_be_bytes(buf[16..32].try_into().unwrap())
+    }
+}
+
+impl<'a> Decode<'a> for u128 {
+    fn decode(buf: &'a [u8]) -> Self {
+        u128::from_be_bytes(buf[16..32].try_into().unwrap())
+    }
+}
 
 pub struct Int8(pub [u8; 32]);
 pub struct Int16(pub [u8; 32]);

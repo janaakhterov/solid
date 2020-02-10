@@ -11,9 +11,6 @@ where
     fn encode(self) -> Vec<u8> {
         let len = self.required_len();
 
-        println!("[Encode] [Vec<T>] buf.len: {}", len);
-        println!("[Encode] [Vec<T>] self.len: {}", self.len());
-
         let mut buf = vec![0u8; len as usize];
         buf[24..32].copy_from_slice(&(self.len() as u64).to_be_bytes());
 

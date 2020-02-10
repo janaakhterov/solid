@@ -50,7 +50,7 @@ fn number_test() {
 #[test]
 #[rustfmt::skip]
 fn byte_test() {
-    let buf = Builder::new().add(Bytes("random bytes".as_bytes().to_vec())).build();
+    let buf = Builder::new().add(Bytes("random bytes".as_bytes())).build();
     let first_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let first_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000c").unwrap();
     let first_data = hex::decode("72616E646F6D206279746573000000000000000000000000000000000000000000").unwrap();
@@ -189,7 +189,7 @@ fn array_number_test() {
 #[rustfmt::skip]
 fn bytes_array_test() {
     let buf = Builder::new()
-        .add(vec![Bytes([0xaau8; 16].to_vec()), Bytes([0xffu8; 16].to_vec())])
+        .add(vec![Bytes(&[0xaau8; 16]), Bytes(&[0xffu8; 16])])
         .add(vec!["random string".to_string(), "what about another one".to_string()])
         .build();
 

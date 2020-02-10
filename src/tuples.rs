@@ -1,4 +1,5 @@
 use crate::encode::Encode;
+use crate::decode::Decode;
 use crate::into_type::IntoType;
 
 macro_rules! impl_encode_and_into_types_for_tuples {
@@ -34,7 +35,7 @@ macro_rules! impl_encode_and_into_types_for_tuples {
                             .copy_from_slice(&bytes);
                     }
 
-                    index += if $ident::is_dynamic() { 1 } else { 1 };
+                    index += 1;
                 )+
 
                 buf
@@ -68,6 +69,30 @@ macro_rules! impl_encode_and_into_types_for_tuples {
                 )+
 
                 ty
+            }
+        }
+
+        #[allow(unused)]
+        impl<'a, $($ident: Encode + Decode<'a>, )+> Decode<'a> for ($($ident,) +)
+        {
+            fn decode(buf: &'a [u8]) -> Self {
+                let mut index = 0;
+
+
+                (
+                    $(
+                        {
+                            let value = if $ident::is_dynamic() {
+                                $ident::decode(&buf[index * 32..(index + 1) * 32])
+                            } else {
+                                let offset = u64::decode(&buf[index * 32..(index + 1) * 32]);
+                                $ident::decode(&buf[offset as usize..])
+                            };
+                            index += 1;
+                            value
+                        },
+                    )+
+                )
             }
         }
 	  };

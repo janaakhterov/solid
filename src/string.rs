@@ -1,4 +1,5 @@
 use crate::encode::Encode;
+use crate::decode::Decode;
 
 impl Encode for String {
     fn encode(self) -> Vec<u8> {
@@ -19,5 +20,12 @@ impl Encode for String {
 
     fn is_dynamic() -> bool {
         true
+    }
+}
+
+impl<'a> Decode<'a> for String {
+    fn decode(buf: &'a [u8]) -> Self {
+        let len = u64::decode(&buf[0..32]);
+        String::from_utf8(buf[32..32 + len as usize].to_vec()).unwrap()
     }
 }

@@ -421,7 +421,40 @@ mod test {
         let value: Response = from_bytes(&value)?;
 
         assert_eq!(value.strings.len(), 2);
-        // assert_eq!(value.string, "random bytes");
+        assert_eq!(value.strings[0].as_str(), "random bytes");
+        assert_eq!(value.strings[1].as_str(), "random bytes");
+
+        Ok(())
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn de_bytes_array_test() -> Result<()> {
+        #[derive(Debug, Deserialize)]
+        struct Response<'a> {
+            #[serde(borrow)]
+            bytes: Vec<&'a [u8]>,
+        }
+
+        let value = hex::decode(
+            "\
+            0000000000000000000000000000000000000000000000000000000000000020\
+            0000000000000000000000000000000000000000000000000000000000000002\
+            0000000000000000000000000000000000000000000000000000000000000040\
+            0000000000000000000000000000000000000000000000000000000000000080\
+            000000000000000000000000000000000000000000000000000000000000000C\
+            72616E646F6D2062797465730000000000000000000000000000000000000000\
+            000000000000000000000000000000000000000000000000000000000000000C\
+            72616E646F6D2062797465730000000000000000000000000000000000000000\
+            ",
+        )
+            .unwrap();
+
+        let value: Response = from_bytes(&value)?;
+
+        assert_eq!(value.bytes.len(), 2);
+        assert_eq!(value.bytes[0], &b"random bytes"[..]);
+        assert_eq!(value.bytes[1], &b"random bytes"[..]);
 
         Ok(())
     }

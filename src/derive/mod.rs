@@ -1,4 +1,4 @@
 pub mod de;
-// pub mod se;
+pub mod ser;
 
 pub use de::{from_bytes, Deserializer};

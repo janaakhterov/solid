@@ -269,5 +269,13 @@ fn hex_test() -> Result<(), anyhow::Error> {
 fn tuple_test() -> Result<(), anyhow::Error> {
     let buf = Builder::new().add((0xffu8, 0xaabbu16)).build();
 
+    let offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
+    let tuple1 = hex::decode("00000000000000000000000000000000000000000000000000000000000000ff").unwrap();
+    let tuple2 = hex::decode("000000000000000000000000000000000000000000000000000000000000aabb").unwrap();
+
+    assert_eq!(&offset[0..32], &buf[32 * 0..32 * 1]);
+    assert_eq!(&tuple1[0..32], &buf[32 * 1..32 * 2]);
+    assert_eq!(&tuple2[0..32], &buf[32 * 2..32 * 3]);
+
     Ok(())
 }

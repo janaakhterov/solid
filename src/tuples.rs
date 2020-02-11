@@ -63,12 +63,12 @@ macro_rules! impl_encode_and_into_types_for_tuples {
 
         impl<$($ident: IntoType, )+> IntoType for ($($ident,) +) {
             fn into_type() -> String {
-                let mut ty = String::new();
+                let mut ty = Vec::new();
                 $(
-                    ty.push_str(& $ident::into_type());
+                    ty.push($ident::into_type());
                 )+
 
-                ty
+                format!("({})", ty.join(","))
             }
         }
 

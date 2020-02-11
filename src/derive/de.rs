@@ -189,7 +189,11 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
         _name: &'static str,
         visitor: V,
     ) -> Result<V::Value> {
-        visitor.visit_newtype_struct(self)
+        let mut deserializer = Deserializer {
+            buf: &self.buf[self.index * 32..],
+            index: 0,
+        };
+        Ok(visitor.visit_seq(Struct::new(&mut deserializer))?)
     }
 
     // Deserialization of compound types like sequences and maps happens by
@@ -213,18 +217,26 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // As indicated by the length parameter, the `Deserialize` implementation
     // for a tuple in the Serde data model is required to know the length of the
     // tuple before even looking at the input data.
-    fn deserialize_tuple<V: Visitor<'de>>(mut self, _len: usize, visitor: V) -> Result<V::Value> {
-        Ok(visitor.visit_seq(Struct::new(&mut self))?)
+    fn deserialize_tuple<V: Visitor<'de>>(self, _len: usize, visitor: V) -> Result<V::Value> {
+        let mut deserializer = Deserializer {
+            buf: &self.buf[self.index * 32..],
+            index: 0,
+        };
+        Ok(visitor.visit_seq(Struct::new(&mut deserializer))?)
     }
 
     // Tuple structs look just like sequences in JSON.
     fn deserialize_tuple_struct<V: Visitor<'de>>(
-        mut self,
+        self,
         _name: &'static str,
         _len: usize,
         visitor: V,
     ) -> Result<V::Value> {
-        Ok(visitor.visit_seq(Struct::new(&mut self))?)
+        let mut deserializer = Deserializer {
+            buf: &self.buf[self.index * 32..],
+            index: 0,
+        };
+        Ok(visitor.visit_seq(Struct::new(&mut deserializer))?)
     }
 
     // Much like `deserialize_seq` but calls the visitors `visit_map` method
@@ -242,12 +254,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // are before even looking at the input data. Any key-value pairing in which
     // the fields cannot be known ahead of time is probably a map.
     fn deserialize_struct<V: Visitor<'de>>(
-        mut self,
+        self,
         _name: &'static str,
         _fields: &'static [&'static str],
         visitor: V,
     ) -> Result<V::Value> {
-        Ok(visitor.visit_seq(Struct::new(&mut self))?)
+        let mut deserializer = Deserializer {
+            buf: &self.buf[self.index * 32..],
+            index: 0,
+        };
+        Ok(visitor.visit_seq(Struct::new(&mut deserializer))?)
     }
 
     fn deserialize_enum<V: Visitor<'de>>(

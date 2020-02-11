@@ -7,17 +7,22 @@ use std::{
     mem,
 };
 
-macro_rules! impl_encode {
+macro_rules! impl_encode_signed {
     ($ty: ty) => {
         impl Encode for $ty {
             fn encode(self) -> Vec<u8> {
-                let mut buf = vec![0u8; 32];
+                let bits = if self.to_be_bytes()[0] & 0x80 == 0x80 {
+                    0xff
+                } else {
+                    0x00
+                };
+                let mut buf = vec![bits; 32];
                 buf[32 - mem::size_of::<$ty>()..].copy_from_slice(&self.to_be_bytes());
                 buf
             }
 
             fn required_len(&self) -> u64 {
-                32 as u64
+                32
             }
 
             fn is_dynamic() -> bool {
@@ -27,16 +32,36 @@ macro_rules! impl_encode {
     };
 }
 
-impl_encode!(i8);
-impl_encode!(u8);
-impl_encode!(i16);
-impl_encode!(u16);
-impl_encode!(i32);
-impl_encode!(u32);
-impl_encode!(i64);
-impl_encode!(u64);
-impl_encode!(i128);
-impl_encode!(u128);
+macro_rules! impl_encode_unsigned {
+    ($ty: ty) => {
+        impl Encode for $ty {
+            fn encode(self) -> Vec<u8> {
+                let mut buf = vec![0u8; 32];
+                buf[32 - mem::size_of::<$ty>()..].copy_from_slice(&self.to_be_bytes());
+                buf
+            }
+
+            fn required_len(&self) -> u64 {
+                32
+            }
+
+            fn is_dynamic() -> bool {
+                false
+            }
+        }
+    };
+}
+
+impl_encode_signed!(i8);
+impl_encode_unsigned!(u8);
+impl_encode_signed!(i16);
+impl_encode_unsigned!(u16);
+impl_encode_signed!(i32);
+impl_encode_unsigned!(u32);
+impl_encode_signed!(i64);
+impl_encode_unsigned!(u64);
+impl_encode_signed!(i128);
+impl_encode_unsigned!(u128);
 
 impl<'a> Decode<'a> for i8 {
     fn decode(buf: &'a [u8]) -> Self {

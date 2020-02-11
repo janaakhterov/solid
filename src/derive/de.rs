@@ -133,7 +133,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
         unimplemented!()
     }
 
-    fn deserialize_str<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
+    fn deserialize_str<V: Visitor<'de>>(self, _visitor: V) -> Result<V::Value> {
         unimplemented!();
         // visitor.visit_borrowed_str(&self.decode::<String>()?)
     }
@@ -195,8 +195,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // Deserialization of compound types like sequences and maps happens by
     // passing the visitor an "Access" object that gives it the ability to
     // iterate through the data contained in the sequence.
-    fn deserialize_seq<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value> {
-        Ok(visitor.visit_seq(Struct::new(&mut self))?)
+    fn deserialize_seq<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
+        let offset = self.decode::<u64>()? as usize;
+        let len = u64::decode(&self.buf[offset..offset + 32]);
+
+        let mut deserializer = Deserializer {
+            buf: &self.buf[offset + 32..],
+            index: 0,
+        };
+
+        Ok(visitor.visit_seq(VecDeserializer::new(&mut deserializer, len as usize))?)
     }
 
     // Tuples look just like sequences in JSON. Some formats may be able to
@@ -205,18 +213,18 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // As indicated by the length parameter, the `Deserialize` implementation
     // for a tuple in the Serde data model is required to know the length of the
     // tuple before even looking at the input data.
-    fn deserialize_tuple<V: Visitor<'de>>(self, _len: usize, visitor: V) -> Result<V::Value> {
-        self.deserialize_seq(visitor)
+    fn deserialize_tuple<V: Visitor<'de>>(mut self, _len: usize, visitor: V) -> Result<V::Value> {
+        Ok(visitor.visit_seq(Struct::new(&mut self))?)
     }
 
     // Tuple structs look just like sequences in JSON.
     fn deserialize_tuple_struct<V: Visitor<'de>>(
-        self,
+        mut self,
         _name: &'static str,
         _len: usize,
         visitor: V,
     ) -> Result<V::Value> {
-        self.deserialize_seq(visitor)
+        Ok(visitor.visit_seq(Struct::new(&mut self))?)
     }
 
     // Much like `deserialize_seq` but calls the visitors `visit_map` method
@@ -234,12 +242,12 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     // are before even looking at the input data. Any key-value pairing in which
     // the fields cannot be known ahead of time is probably a map.
     fn deserialize_struct<V: Visitor<'de>>(
-        self,
+        mut self,
         _name: &'static str,
         _fields: &'static [&'static str],
         visitor: V,
     ) -> Result<V::Value> {
-        self.deserialize_seq(visitor)
+        Ok(visitor.visit_seq(Struct::new(&mut self))?)
     }
 
     fn deserialize_enum<V: Visitor<'de>>(
@@ -281,6 +289,30 @@ impl<'de, 'a> SeqAccess<'de> for Struct<'a, 'de> {
     }
 }
 
+struct VecDeserializer<'a, 'de> {
+    de: &'a mut Deserializer<'de>,
+    len: usize,
+}
+
+impl<'a, 'de> VecDeserializer<'a, 'de> {
+    fn new(de: &'a mut Deserializer<'de>, len: usize) -> Self {
+        Self { de, len }
+    }
+}
+
+impl<'de, 'a> SeqAccess<'de> for VecDeserializer<'a, 'de> {
+    type Error = Error;
+
+    fn next_element_seed<T: DeserializeSeed<'de>>(&mut self, seed: T) -> Result<Option<T::Value>> {
+        if self.len == 0 {
+            Ok(None)
+        } else {
+            self.len -= 1;
+            seed.deserialize(&mut *self.de).map(Some)
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -304,18 +336,18 @@ mod test {
 
         let value = hex::decode(
             "\
-00000000000000000000000000000000000000000000000000000000000000FF\
-00000000000000000000000000000000000000000000000000000000000000FF\
-000000000000000000000000000000000000000000000000000000000000FFFF\
-000000000000000000000000000000000000000000000000000000000000FFFF\
-00000000000000000000000000000000000000000000000000000000FFFFFFFF\
-00000000000000000000000000000000000000000000000000000000FFFFFFFF\
-000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF\
-000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF\
-00000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\
-00000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+            00000000000000000000000000000000000000000000000000000000000000FF\
+            00000000000000000000000000000000000000000000000000000000000000FF\
+            000000000000000000000000000000000000000000000000000000000000FFFF\
+            000000000000000000000000000000000000000000000000000000000000FFFF\
+            00000000000000000000000000000000000000000000000000000000FFFFFFFF\
+            00000000000000000000000000000000000000000000000000000000FFFFFFFF\
+            000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF\
+            000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF\
+            00000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\
+            00000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
         )
-        .unwrap();
+            .unwrap();
         let value: Response = from_bytes(&value)?;
 
         assert_eq!(value.r#i8,   0xFFu8 as i8);

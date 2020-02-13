@@ -65,8 +65,6 @@ pub fn to_bytes<T: ?Sized + Serialize>(value: &T) -> Result<Vec<u8>> {
 
 impl<'a> ser::Serializer for &'a mut Serializer {
     type Ok = ();
-
-    // Cannot error
     type Error = Error;
 
     type SerializeSeq = Self;
@@ -234,7 +232,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Ok(self)
     }
 
-    fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple> {
+    fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
         println!("[Serialize] tuple");
         self.stack.push_front(Buf::default());
         Ok(self)
@@ -243,7 +241,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     fn serialize_tuple_struct(
         self,
         _name: &'static str,
-        len: usize,
+        _len: usize,
     ) -> Result<Self::SerializeTupleStruct> {
         println!("[Serialize] tuple_struct");
         self.stack.push_front(Buf::default());
@@ -506,11 +504,11 @@ mod test {
         #[derive(Serialize)]
         struct Params<'a> {
             string: String,
-            bytes: &'a [u8],
+            bytes: Bytes<'a>,
         }
 
         // let bytes = &b"random string"[..];
-        let bytes = &[0xffu8; 30][..];
+        let bytes = Bytes(&b"random string"[..]);
 
         let params = Params {
             string: "random string".to_string(),
@@ -519,27 +517,25 @@ mod test {
 
         let buf = to_bytes(&params)?;
 
-        println!("{:?}", buf);
-
         let string_offset =
             hex::decode("0000000000000000000000000000000000000000000000000000000000000040")
                 .unwrap();
         let bytes_offset =
-            hex::decode("0000000000000000000000000000000000000000000000000000000000000008")
+            hex::decode("0000000000000000000000000000000000000000000000000000000000000080")
                 .unwrap();
         let string_len =
-            hex::decode("000000000000000000000000000000000000000000000000000000000000000C")
+            hex::decode("000000000000000000000000000000000000000000000000000000000000000D")
                 .unwrap();
         let string =
-            hex::decode("72616E646F6D2062797465730000000000000000000000000000000000000000")
+            hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000")
                 .unwrap();
         let bytes_len =
-            hex::decode("000000000000000000000000000000000000000000000000000000000000000C")
+            hex::decode("000000000000000000000000000000000000000000000000000000000000000D")
                 .unwrap();
-        let bytes = hex::decode("72616E646F6D2062797465730000000000000000000000000000000000000000")
+        let bytes = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000")
             .unwrap();
 
-        // assert_eq!(10 * 32, buf.len());
+        assert_eq!(6 * 32, buf.len());
         assert_eq!(&string_offset[0..32], &buf[32 * 0..32 * 1]);
         assert_eq!(&bytes_offset[0..32], &buf[32 * 1..32 * 2]);
         assert_eq!(&string_len[0..32], &buf[32 * 2..32 * 3]);

@@ -1,5 +1,7 @@
 use crate::encode::Encode;
 use crate::decode::Decode;
+use serde::ser::Serializer;
+use serde::ser::Serialize;
 
 pub struct Bytes<'a>(pub &'a [u8]);
 
@@ -29,5 +31,11 @@ impl<'a> Decode<'a> for Bytes<'a> {
     fn decode(buf: &'a [u8]) -> Bytes<'a> {
         let len = u64::decode(&buf[0..32]);
         Bytes(&buf[32..32 + len as usize])
+    }
+}
+
+impl<'a> Serialize for Bytes<'a> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_bytes(&self.0)
     }
 }

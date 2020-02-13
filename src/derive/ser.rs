@@ -294,7 +294,7 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
 
     fn end(self) -> Result<()> {
         let mut value_stack = self.stack.pop_front().unwrap();
-        let mut stack = self.stack.remove(0).unwrap();
+        let mut stack = self.stack.front_mut().unwrap();
         stack
             .statics
             .extend_from_slice(&(value_stack.statics.len() as u64 / 32).encode());
@@ -308,12 +308,19 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_element<T: ?Sized + Serialize>(&mut self, _value: &T) -> Result<()> {
-        unimplemented!()
+    fn serialize_element<T: ?Sized + Serialize>(&mut self, value: &T) -> Result<()> {
+        value.serialize(&mut **self)
     }
 
     fn end(self) -> Result<()> {
-        unimplemented!()
+        let mut value_stack = self.stack.pop_front().unwrap();
+        let mut stack = self.stack.front_mut().unwrap();
+        stack
+            .statics
+            .extend_from_slice(&(value_stack.statics.len() as u64 / 32).encode());
+        value_stack.statics.extend_from_slice(&value_stack.dynamics);
+        stack.dynamics.extend_from_slice(&value_stack.statics);
+        Ok(())
     }
 }
 
@@ -327,7 +334,7 @@ impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
 
     fn end(self) -> Result<()> {
         let mut value_stack = self.stack.pop_front().unwrap();
-        let mut stack = self.stack.remove(0).unwrap();
+        let mut stack = self.stack.front_mut().unwrap();
         stack
             .statics
             .extend_from_slice(&(value_stack.statics.len() as u64 / 32).encode());
@@ -507,7 +514,6 @@ mod test {
             bytes: Bytes<'a>,
         }
 
-        // let bytes = &b"random string"[..];
         let bytes = Bytes(&b"random string"[..]);
 
         let params = Params {
@@ -542,6 +548,53 @@ mod test {
         assert_eq!(&string[0..32], &buf[32 * 3..32 * 4]);
         assert_eq!(&bytes_len[0..32], &buf[32 * 4..32 * 5]);
         assert_eq!(&bytes[0..32], &buf[32 * 5..32 * 6]);
+
+        Ok(())
+    }
+
+    #[test]
+    #[rustfmt::skip]
+    fn serialize_tuple_test() -> Result<(), Error> {
+        #[derive(Serialize)]
+        struct Params<'a> {
+            string: (String, &'a str),
+            bytes: (Bytes<'a>, Bytes<'a>),
+            numbers: (i8, u8, i16, u16, i32, u32),
+        }
+
+        let bytes1 = Bytes(&b"random string"[..]);
+        let bytes2 = Bytes(&b"random string"[..]);
+
+        let params = Params {
+            string: ("random string".to_string(), "random string"),
+            bytes: (bytes1, bytes2),
+            numbers: (-2, 55, 1515, 8788, -151, 51515)
+        };
+
+        let buf = to_bytes(&params)?;
+        println!("buf: {:?}", buf);
+
+         let string_tuple_offset  = hex::decode("0000000000000000000000000000000000000000000000000000000000000060").unwrap();
+         let bytes_tuple_offset   = hex::decode("00000000000000000000000000000000000000000000000000000000000000e0").unwrap();
+         let numbers_tuple_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000160").unwrap();
+         let string1_len          = hex::decode("000000000000000000000000000000000000000000000000000000000000000D").unwrap();
+         let string1              = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000").unwrap();
+         let string2_len          = hex::decode("000000000000000000000000000000000000000000000000000000000000000D").unwrap();
+         let string2              = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000").unwrap();
+         let bytes1_len           = hex::decode("000000000000000000000000000000000000000000000000000000000000000D").unwrap();
+         let bytes1               = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000").unwrap();
+         let bytes2_len           = hex::decode("000000000000000000000000000000000000000000000000000000000000000D").unwrap();
+         let bytes2               = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000").unwrap();
+         let number_i8            = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+         let number_u8            = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+         let number_i16           = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+         let number_u16           = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+         let number_i32           = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+         let number_u32           = hex::decode("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+
+        assert_eq!(&string_tuple_offset[0..32],  &buf[32 * 0..32 * 1]);
+        assert_eq!(&bytes_tuple_offset[0..32],   &buf[32 * 1..32 * 2]);
+        assert_eq!(&numbers_tuple_offset[0..32], &buf[32 * 2..32 * 3]);
 
         Ok(())
     }

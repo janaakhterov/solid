@@ -1,9 +1,9 @@
 use crate::{
-    Error,
+    bytes::Bytes,
     decode::Decode,
     encode::Encode,
+    Error,
     Result,
-    bytes::Bytes,
 };
 use serde::{
     de::{

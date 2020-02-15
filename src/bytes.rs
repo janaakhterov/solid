@@ -1,7 +1,7 @@
-use crate::encode::Encode;
-use crate::decode::Decode;
-use serde::ser::Serializer;
-use serde::ser::Serialize;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+};
 
 pub struct Bytes<'a>(pub &'a [u8]);
 
@@ -15,7 +15,7 @@ impl<'a> Encode for Bytes<'a> {
     }
 
     fn required_len(&self) -> u64 {
-        (if self.0.len() / 32 == 0  {
+        (if self.0.len() / 32 == 0 {
             32 + 32
         } else {
             (self.0.len() / 32 + 1) * 32 + 32
@@ -34,8 +34,9 @@ impl<'a> Decode<'a> for Bytes<'a> {
     }
 }
 
-impl<'a> Serialize for Bytes<'a> {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+#[cfg(feature = "derive")]
+impl<'a> serde::ser::Serialize for Bytes<'a> {
+    fn serialize<S: serde::ser::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         serializer.serialize_bytes(&self.0)
     }
 }

@@ -1,6 +1,11 @@
-use serde::{de, ser};
-use std::fmt;
-use std::string::FromUtf8Error;
+use serde::{
+    de,
+    ser,
+};
+use std::{
+    fmt,
+    string::FromUtf8Error,
+};
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 

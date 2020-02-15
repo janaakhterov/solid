@@ -1,5 +1,7 @@
-use crate::encode::Encode;
-use crate::decode::Decode;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+};
 use std::convert::TryInto;
 
 pub struct Bytes1(pub [u8; 1]);
@@ -58,7 +60,7 @@ macro_rules! impl_encode_bytesfix {
                 $ty(buf[0..32].try_into().unwrap())
             }
         }
-    }
+    };
 }
 
 impl_encode_bytesfix!(Bytes1);

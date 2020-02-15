@@ -1,5 +1,8 @@
-use sha3::{Digest, Keccak256};
 use crate::into_type::IntoType;
+use sha3::{
+    Digest,
+    Keccak256,
+};
 
 pub struct Selector {
     params: Vec<String>,
@@ -7,9 +10,7 @@ pub struct Selector {
 
 impl Selector {
     pub fn new() -> Self {
-        Selector {
-            params: Vec::new(),
-        }
+        Selector { params: Vec::new() }
     }
 
     pub fn add<T: IntoType>(mut self) -> Self {

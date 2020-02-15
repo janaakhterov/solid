@@ -1,9 +1,9 @@
 #[cfg(test)]
 use crate::{
+    address::Address,
     builder::Builder,
     bytes::Bytes,
     bytesfix::Bytes4,
-    address::Address,
     function::Function,
 };
 #[cfg(test)]

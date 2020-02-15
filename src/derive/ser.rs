@@ -8,8 +8,10 @@ use serde::{
     ser,
     Serialize,
 };
-use std::collections::VecDeque;
-use std::convert::TryInto;
+use std::{
+    collections::VecDeque,
+    convert::TryInto,
+};
 
 #[derive(Default)]
 pub struct Serializer {
@@ -25,7 +27,6 @@ struct Field {
 
 impl Serializer {
     fn encode<T: Encode>(&mut self, value: T) -> Result<(), Error> {
-        println!("[Serializer::Encode], dynamic: {}", T::is_dynamic());
         if let Some(stack) = self.stack.front_mut() {
             let value = value.encode();
             if T::is_dynamic() {
@@ -49,30 +50,13 @@ impl Serializer {
 
 pub fn to_bytes<T: ?Sized + Serialize>(value: &T) -> Result<Vec<u8>> {
     let mut serializer = Serializer::default();
-
-    println!("[to_bytes] start");
-    println!(
-        "[to_bytes] serializer stack.len(): {}",
-        serializer.stack.len()
-    );
     value.serialize(&mut serializer)?;
-    println!("[to_bytes] serializer finished");
-    println!(
-        "[to_bytes] serializer stack.len(): {}",
-        serializer.stack.len()
-    );
-
-
 
     let mut stack = serializer.stack.pop_front().unwrap();
 
     let mut offset = stack.len() as u64 * 32;
 
-
-    println!("[to_bytes] Setting offest");
     for field in stack.iter_mut() {
-        println!("[to_bytes] offset: {:?}", offset);
-        println!("[to_bytes] field.buf.len(): {:?}", field.buf.len());
         if field.dynamic {
             field.value = (offset.encode()[..]).try_into()?;
             offset += field.buf.len() as u64;
@@ -105,67 +89,56 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     type SerializeStructVariant = Self;
 
     fn serialize_bool(self, value: bool) -> Result<()> {
-        println!("[Serialize] bool");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_i8(self, value: i8) -> Result<()> {
-        println!("[Serialize] i8");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_u8(self, value: u8) -> Result<()> {
-        println!("[Serialize] u8");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_i16(self, value: i16) -> Result<()> {
-        println!("[Serialize] i16");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_u16(self, value: u16) -> Result<()> {
-        println!("[Serialize] u16");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_i32(self, value: i32) -> Result<()> {
-        println!("[Serialize] i32");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_u32(self, value: u32) -> Result<()> {
-        println!("[Serialize] u32");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_i64(self, value: i64) -> Result<()> {
-        println!("[Serialize] i64");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_u64(self, value: u64) -> Result<()> {
-        println!("[Serialize] u64");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_i128(self, value: i128) -> Result<()> {
-        println!("[Serialize] i128");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_u128(self, value: u128) -> Result<()> {
-        println!("[Serialize] u128");
         self.encode(value)?;
         Ok(())
     }
@@ -189,13 +162,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_str(self, value: &str) -> Result<()> {
-        println!("[Serialize] str");
         self.encode(value)?;
         Ok(())
     }
 
     fn serialize_bytes(self, value: &[u8]) -> Result<()> {
-        println!("[Serialize] bytes");
         self.encode(Bytes(&value))?;
         Ok(())
     }
@@ -231,7 +202,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         ))
     }
 
-    fn serialize_newtype_struct<T: ?Sized + Serialize>(self, _name: &'static str, value: &T) -> Result<()> {
+    fn serialize_newtype_struct<T: ?Sized + Serialize>(
+        self,
+        _name: &'static str,
+        value: &T,
+    ) -> Result<()> {
         value.serialize(self)
     }
 
@@ -256,7 +231,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple> {
-        println!("[Serialize] tuple");
         self.serialize_struct("", len)
     }
 
@@ -265,7 +239,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         name: &'static str,
         len: usize,
     ) -> Result<Self::SerializeTupleStruct> {
-        println!("[Serialize] tuple_struct");
         self.serialize_struct(name, len)
     }
 
@@ -286,7 +259,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_struct(self, _name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
-        println!("[Serialize] struct");
         self.stack.push_front(Vec::with_capacity(len));
         Ok(self)
     }
@@ -314,8 +286,6 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
     }
 
     fn end(self) -> Result<()> {
-        println!("[SerializeSeq::end] stack: {:?}", self.stack.front());
-
         if let Some(stack) = self.stack.front_mut() {
             let mut offset = stack.len() as u64 * 32;
 
@@ -343,9 +313,6 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
                 buf
             });
 
-            println!("[SerializeSeq::end] buf: {:?}", buf);
-            println!("[SerializeSeq::end] stack: {:?}", stack);
-
             stack.push(Field {
                 dynamic: true,
                 value: [0u8; 32],
@@ -362,12 +329,10 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_element<T: ?Sized + Serialize>(&mut self, value: &T) -> Result<()> {
-        println!("[SerializeTuple::serialize_element]");
         value.serialize(&mut **self)
     }
 
     fn end(self) -> Result<()> {
-        println!("[SerializeTuple::end] before: {:?}", self.stack.front());
         if let Some(stack) = self.stack.front_mut() {
             let mut offset = stack.len() as u64 * 32;
 
@@ -378,8 +343,6 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
                 }
             }
         }
-
-        println!("[SerializeTuple::end] after setting statics: {:?}", self.stack.front());
 
         if self.stack.len() > 1 {
             let value_stack = self.stack.pop_front().unwrap();
@@ -395,17 +358,12 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
                 buf
             });
 
-            println!("[SerializeTuple::end] buf: {:?}", buf);
-
             stack.push(Field {
                 dynamic: true,
                 value: [0u8; 32],
                 buf,
             });
         }
-
-        println!("[SerializeTuple::end] after: {:?}", self.stack.front());
-
 
         Ok(())
     }
@@ -420,51 +378,6 @@ impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
     }
 
     fn end(self) -> Result<()> {
-        // let value_stack = self.stack.pop_front().unwrap();
-        // let dynamics = value_stack.dynamics;
-        // let statics = value_stack.statics;
-
-        // let mut buf = statics.into_iter().filter(Option::is_some).map(Option::unwrap)
-        //     .fold(Vec::new(), |mut buf, value| {
-        //         buf.extend(&value[..]);
-        //         buf
-        //     });
-
-        // buf.extend(dynamics);
-
-        // if self.stack.front().is_none() {
-        //     self.stack.push_front(Buf::default());
-        // }
-
-        // if let Some(stack) = self.stack.front_mut() {
-        //     if let Some(index) = stack.statics.iter().position(|value| value.is_none()) {
-        //         let len = stack.statics.len() * 32 + stack.dynamics.len();
-        //         stack.statics[index] = Some((&(len as u64).encode()[..]).try_into()?);
-        //     }
-
-        //     stack.dynamics.extend(buf);
-        // }
-
-        Ok(())
-    }
-}
-
-impl<'a> ser::SerializeStruct for &'a mut Serializer {
-    type Ok = ();
-    type Error = Error;
-
-    fn serialize_field<T: ?Sized + Serialize>(
-        &mut self,
-        _key: &'static str,
-        value: &T,
-    ) -> Result<()> {
-        println!("[SerializeStruct] field");
-        value.serialize(&mut **self)
-    }
-
-    fn end(self) -> Result<()> {
-        println!("[SerializeStruct::end] stack: {:?}", self.stack);
-
         if let Some(stack) = self.stack.front_mut() {
             let mut offset = stack.len() as u64 * 32;
 
@@ -490,8 +403,6 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
                 buf
             });
 
-            println!("[SerializeStruct::end] buf: {:?}", buf);
-
             stack.push(Field {
                 dynamic: true,
                 value: [0u8; 32],
@@ -499,7 +410,54 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
             });
         }
 
-        println!("[SerializeStruct::end] stack: {:?}", self.stack);
+        Ok(())
+    }
+}
+
+impl<'a> ser::SerializeStruct for &'a mut Serializer {
+    type Ok = ();
+    type Error = Error;
+
+    fn serialize_field<T: ?Sized + Serialize>(
+        &mut self,
+        _key: &'static str,
+        value: &T,
+    ) -> Result<()> {
+        value.serialize(&mut **self)
+    }
+
+    fn end(self) -> Result<()> {
+        if let Some(stack) = self.stack.front_mut() {
+            let mut offset = stack.len() as u64 * 32;
+
+            for field in stack.iter_mut() {
+                if field.dynamic {
+                    field.value = (offset.encode()[..]).try_into()?;
+                    offset += field.buf.len() as u64;
+                }
+            }
+        }
+
+        if self.stack.len() > 1 {
+            let value_stack = self.stack.pop_front().unwrap();
+            let stack = self.stack.front_mut().unwrap();
+
+            let buf = value_stack.iter().fold(Vec::new(), |mut buf, field| {
+                buf.extend(&field.value);
+                buf
+            });
+
+            let buf = value_stack.into_iter().fold(buf, |mut buf, field| {
+                buf.extend(field.buf);
+                buf
+            });
+
+            stack.push(Field {
+                dynamic: true,
+                value: [0u8; 32],
+                buf,
+            });
+        }
 
         Ok(())
     }
@@ -587,8 +545,6 @@ mod test {
 
         let buf = to_bytes(&params)?;
 
-        println!("{:?}", buf);
-
         let first = hex::decode("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
             .unwrap();
         let second =
@@ -649,12 +605,23 @@ mod test {
 
         let buf = to_bytes(&params)?;
 
-        let string_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000040") .unwrap();
-        let bytes_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000080") .unwrap();
-        let string_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000D") .unwrap();
-        let string = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000") .unwrap();
-        let bytes_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000D") .unwrap();
-        let bytes = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000") .unwrap();
+        let string_offset =
+            hex::decode("0000000000000000000000000000000000000000000000000000000000000040")
+                .unwrap();
+        let bytes_offset =
+            hex::decode("0000000000000000000000000000000000000000000000000000000000000080")
+                .unwrap();
+        let string_len =
+            hex::decode("000000000000000000000000000000000000000000000000000000000000000D")
+                .unwrap();
+        let string =
+            hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000")
+                .unwrap();
+        let bytes_len =
+            hex::decode("000000000000000000000000000000000000000000000000000000000000000D")
+                .unwrap();
+        let bytes = hex::decode("72616e646f6d20737472696e6700000000000000000000000000000000000000")
+            .unwrap();
 
         assert_eq!(6 * 32, buf.len());
         assert_eq!(&string_offset[0..32], &buf[32 * 0..32 * 1]);
@@ -733,7 +700,6 @@ mod test {
         };
 
         let buf = to_bytes(&params)?;
-        println!("buf: {:?}", buf);
 
         let string_tuple_offset   = hex::decode("0000000000000000000000000000000000000000000000000000000000000060").unwrap();
         let bytes_tuple_offset    = hex::decode("0000000000000000000000000000000000000000000000000000000000000120").unwrap();

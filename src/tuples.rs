@@ -1,6 +1,8 @@
-use crate::encode::Encode;
-use crate::decode::Decode;
-use crate::into_type::IntoType;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+    into_type::IntoType,
+};
 
 macro_rules! impl_encode_and_into_types_for_tuples {
 	  ($(($index:tt => $ident:ident) ),+) => {

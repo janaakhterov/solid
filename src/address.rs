@@ -1,9 +1,13 @@
-use std::convert::TryFrom;
-use std::convert::TryInto;
-use crate::encode::Encode;
-use crate::decode::Decode;
-use crate::into_type::IntoType;
-use crate::Error;
+use crate::{
+    decode::Decode,
+    encode::Encode,
+    into_type::IntoType,
+    Error,
+};
+use std::convert::{
+    TryFrom,
+    TryInto,
+};
 
 pub struct Address(pub [u8; 32]);
 

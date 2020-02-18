@@ -1,7 +1,7 @@
 use super::ItemStruct;
 use proc_macro2::TokenStream;
 
-pub(super) fn impl_encode(ast: ItemStruct) -> TokenStream {
+pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
     let ident = &ast.ident;
 
     let count = ast.fields.iter().filter_map(|field| {
@@ -24,10 +24,10 @@ pub(super) fn impl_encode(ast: ItemStruct) -> TokenStream {
         fn encode(self) -> Vec<u8> {
             let len = self.required_len();
 
-            let mut buf = vec![0u8; len];
+            let mut buf = vec![0u8; len as usize];
 
-            let mut offset = #count * 32;
-            let mut index = 0;
+            let mut offset = (#count * 32) as usize;
+            let mut index = 0usize;
 
             #(
                 let bytes = self.#field.encode();
@@ -36,7 +36,7 @@ pub(super) fn impl_encode(ast: ItemStruct) -> TokenStream {
                     buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                     offset += bytes.len();
                 } else {
-                    buf.copy_from_slice(*bytes);
+                    buf[index * 32..(index + 1) * 32].copy_from_slice(&bytes);
                 }
                 index += 1;
             )*
@@ -80,7 +80,7 @@ pub(super) fn impl_encode(ast: ItemStruct) -> TokenStream {
     };
 
     quote! {
-        impl solidity_core::encode::Encode for #ident {
+        impl Encode for #ident {
             #encode
 
             #required_len

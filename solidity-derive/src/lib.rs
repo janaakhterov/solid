@@ -46,12 +46,12 @@ impl Parse for ItemStruct {
 pub fn encode(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as ItemStruct);
 
-    TokenStream::from(encode::impl_encode(ast))
+    TokenStream::from(encode::impl_encode(&ast))
 }
 
 #[proc_macro_derive(Decode)]
 pub fn decode(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as ItemStruct);
 
-    TokenStream::from(decode::impl_decode(ast))
+    TokenStream::from(decode::impl_decode(&ast))
 }

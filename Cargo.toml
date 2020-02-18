@@ -1,9 +1,16 @@
+[workspace]
+members = [
+    ".",
+    "solidity-core",
+    "solidity-derive",
+    "examples/contract-call"
+]
+
 [package]
 name = "solidity"
 version = "0.1.0"
 authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
 edition = "2018"
-members = [ "solidity-core", "solidity-derive" ]
 
 [dependencies]
 solidity-derive = { path = "solidity-derive", optional = true }

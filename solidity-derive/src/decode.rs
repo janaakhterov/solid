@@ -1,7 +1,7 @@
 use super::ItemStruct;
 use proc_macro2::TokenStream;
 
-pub(super) fn impl_decode(ast: ItemStruct) -> TokenStream {
+pub(super) fn impl_decode(ast: &ItemStruct) -> TokenStream {
     let ident = &ast.ident;
 
     let field = ast.fields.iter().filter_map(|field| {
@@ -17,9 +17,8 @@ pub(super) fn impl_decode(ast: ItemStruct) -> TokenStream {
     });
 
     quote! {
-        impl<'a> solidity_core::decode::Decode<'a> for #ident {
+        impl<'a> Decode<'a> for #ident {
             fn decode(buf: &'a [u8]) -> Self {
-                use solidity_core::encode::Encode;
                 let mut index = 0;
 
                 Self {

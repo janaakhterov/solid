@@ -1,0 +1,9 @@
+[package]
+name = "solidity-example-contrat-call"
+version = "0.1.0"
+edition = "2018"
+workspace = "../.."
+
+[dependencies]
+solidity = { path = "../.." }
+serde = "1.0.104"

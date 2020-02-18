@@ -21,6 +21,7 @@ use syn::{
 };
 
 mod encode;
+mod decode;
 
 pub(crate) struct ItemStruct {
     _struct_token: Token![struct],
@@ -46,4 +47,11 @@ pub fn encode(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as ItemStruct);
 
     TokenStream::from(encode::impl_encode(ast))
+}
+
+#[proc_macro_derive(Decode)]
+pub fn decode(input: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(input as ItemStruct);
+
+    TokenStream::from(decode::impl_decode(ast))
 }

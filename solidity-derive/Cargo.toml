@@ -1,0 +1,14 @@
+[package]
+name = "solidity-derive"
+version = "0.1.0"
+authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+proc-macro2 = "1.0.8"
+syn = "1.0.14"
+quote = "1.0.2"
+solidity-core = { path = "../solidity-core", default-feautures = false }
+
+[lib]
+proc-macro = true

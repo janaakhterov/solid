@@ -1,4 +1,10 @@
 /target
 Cargo.lock
 
+solidity-derive/target
+solidity-derive/Cargo.lock
+
+solidity-core/target
+solidity-core/Cargo.lock
+
 .#*

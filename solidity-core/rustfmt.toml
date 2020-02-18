@@ -1,0 +1,3 @@
+merge_derives = true
+merge_imports = true
+imports_layout = "Vertical"

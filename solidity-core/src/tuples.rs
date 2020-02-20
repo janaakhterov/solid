@@ -109,3 +109,37 @@ impl_encode_and_into_types_for_tuples!(
     (1 => T1),
     (2 => T2)
 );
+
+impl_encode_and_into_types_for_tuples!(
+    (0 => T0),
+    (1 => T1),
+    (2 => T2),
+    (3 => T3)
+);
+
+impl_encode_and_into_types_for_tuples!(
+    (0 => T0),
+    (1 => T1),
+    (2 => T2),
+    (3 => T3),
+    (4 => T4)
+);
+
+impl_encode_and_into_types_for_tuples!(
+    (0 => T0),
+    (1 => T1),
+    (2 => T2),
+    (3 => T3),
+    (4 => T4),
+    (5 => T5)
+);
+
+impl_encode_and_into_types_for_tuples!(
+    (0 => T0),
+    (1 => T1),
+    (2 => T2),
+    (3 => T3),
+    (4 => T4),
+    (5 => T5),
+    (6 => T6)
+);

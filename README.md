@@ -50,4 +50,23 @@ struct DecodeContractResponse {
     bytes10: Bytes10,
     address: Address,
 }
+
+// Using the `unstable` feature
+// Use derive macro `Decode` if you need to support more types such as
+// `Address`, `BytesFix`, or `u256`.
+#[derive(Decode)]
+struct DecodeContractResponse {
+    value: u256,
+    string: String,
+    bytes10: BytesFix<10>,
+    address: Address,
+}
 ```
+
+### `num_bigint` Support
+
+If you'd like support for `num_bigint` enable the `bigint` feature.
+
+### `fixed` Support
+
+If you'd like support for `fixed` enable the `fixed` feature.

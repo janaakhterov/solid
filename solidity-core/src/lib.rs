@@ -1,3 +1,6 @@
+#![feature(const_generics)]
+#![feature(const_generic_impls_guard)]
+
 #![allow(dead_code)]
 
 pub mod address;

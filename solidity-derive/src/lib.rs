@@ -55,3 +55,9 @@ pub fn decode(input: TokenStream) -> TokenStream {
 
     TokenStream::from(decode::impl_decode(&ast))
 }
+
+#[proc_macro_attribute]
+pub fn function_name(_attr: TokenStream, _item: TokenStream) -> TokenStream {
+    // let ast = parse_macro_input!(item as ItemStruct);
+    (quote! {}).into()
+}

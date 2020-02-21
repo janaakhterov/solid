@@ -22,3 +22,5 @@ default = [ "serde", "derive" ]
 serde = [ "solidity-core/derive" ]
 
 derive = [ "solidity-derive" ]
+
+nightly = [ "solidity-core/nightly" ]

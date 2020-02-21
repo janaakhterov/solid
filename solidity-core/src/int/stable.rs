@@ -1,6 +1,7 @@
 use crate::{
     decode::Decode,
     encode::Encode,
+    into_type::IntoType,
 };
 use std::{
     convert::TryInto,
@@ -180,7 +181,7 @@ pub struct Uint248(pub [u8; 32]);
 pub struct Uint256(pub [u8; 32]);
 
 macro_rules! impl_encode_int {
-    ($ty: ident) => {
+    ($ty: ident, $expr: expr) => {
         impl Encode for $ty {
             fn encode(self) -> Vec<u8> {
                 self.0.to_vec()
@@ -200,60 +201,66 @@ macro_rules! impl_encode_int {
                 $ty(buf[0..32].try_into().unwrap())
             }
         }
+
+        impl IntoType for $ty {
+            fn into_type() -> String {
+                $expr.to_string()
+            }
+        }
     };
 }
 
-impl_encode_int!(Int24);
-impl_encode_int!(Uint24);
-impl_encode_int!(Int40);
-impl_encode_int!(Uint40);
-impl_encode_int!(Int48);
-impl_encode_int!(Uint48);
-impl_encode_int!(Int56);
-impl_encode_int!(Uint56);
-impl_encode_int!(Int72);
-impl_encode_int!(Uint72);
-impl_encode_int!(Int80);
-impl_encode_int!(Uint80);
-impl_encode_int!(Int88);
-impl_encode_int!(Uint88);
-impl_encode_int!(Int96);
-impl_encode_int!(Uint96);
-impl_encode_int!(Int104);
-impl_encode_int!(Uint104);
-impl_encode_int!(Int112);
-impl_encode_int!(Uint112);
-impl_encode_int!(Int120);
-impl_encode_int!(Uint120);
-impl_encode_int!(Int136);
-impl_encode_int!(Uint136);
-impl_encode_int!(Int144);
-impl_encode_int!(Uint144);
-impl_encode_int!(Int152);
-impl_encode_int!(Uint152);
-impl_encode_int!(Int160);
-impl_encode_int!(Uint160);
-impl_encode_int!(Int168);
-impl_encode_int!(Uint168);
-impl_encode_int!(Int176);
-impl_encode_int!(Uint176);
-impl_encode_int!(Int184);
-impl_encode_int!(Uint184);
-impl_encode_int!(Int192);
-impl_encode_int!(Uint192);
-impl_encode_int!(Int200);
-impl_encode_int!(Uint200);
-impl_encode_int!(Int208);
-impl_encode_int!(Uint208);
-impl_encode_int!(Int216);
-impl_encode_int!(Uint216);
-impl_encode_int!(Int224);
-impl_encode_int!(Uint224);
-impl_encode_int!(Int232);
-impl_encode_int!(Uint232);
-impl_encode_int!(Int240);
-impl_encode_int!(Uint240);
-impl_encode_int!(Int248);
-impl_encode_int!(Uint248);
-impl_encode_int!(Int256);
-impl_encode_int!(Uint256);
+impl_encode_int!(Int24, "int24");
+impl_encode_int!(Uint24, "uint24");
+impl_encode_int!(Int40, "int40");
+impl_encode_int!(Uint40, "uint40");
+impl_encode_int!(Int48, "int48");
+impl_encode_int!(Uint48, "uint48");
+impl_encode_int!(Int56, "int56");
+impl_encode_int!(Uint56, "uint56");
+impl_encode_int!(Int72, "int72");
+impl_encode_int!(Uint72, "uint72");
+impl_encode_int!(Int80, "int80");
+impl_encode_int!(Uint80, "uint80");
+impl_encode_int!(Int88, "int88");
+impl_encode_int!(Uint88, "uint88");
+impl_encode_int!(Int96, "int96");
+impl_encode_int!(Uint96, "uint96");
+impl_encode_int!(Int104, "int104");
+impl_encode_int!(Uint104, "uint104");
+impl_encode_int!(Int112, "int112");
+impl_encode_int!(Uint112, "uint112");
+impl_encode_int!(Int120, "int120");
+impl_encode_int!(Uint120, "uint120");
+impl_encode_int!(Int136, "int136");
+impl_encode_int!(Uint136, "uint136");
+impl_encode_int!(Int144, "int144");
+impl_encode_int!(Uint144, "uint144");
+impl_encode_int!(Int152, "int152");
+impl_encode_int!(Uint152, "uint152");
+impl_encode_int!(Int160, "int160");
+impl_encode_int!(Uint160, "uint160");
+impl_encode_int!(Int168, "int168");
+impl_encode_int!(Uint168, "uint168");
+impl_encode_int!(Int176, "int176");
+impl_encode_int!(Uint176, "uint176");
+impl_encode_int!(Int184, "int184");
+impl_encode_int!(Uint184, "uint184");
+impl_encode_int!(Int192, "int192");
+impl_encode_int!(Uint192, "uint192");
+impl_encode_int!(Int200, "int200");
+impl_encode_int!(Uint200, "uint200");
+impl_encode_int!(Int208, "int208");
+impl_encode_int!(Uint208, "uint208");
+impl_encode_int!(Int216, "int216");
+impl_encode_int!(Uint216, "uint216");
+impl_encode_int!(Int224, "int224");
+impl_encode_int!(Uint224, "uint224");
+impl_encode_int!(Int232, "int232");
+impl_encode_int!(Uint232, "uint232");
+impl_encode_int!(Int240, "int240");
+impl_encode_int!(Uint240, "uint240");
+impl_encode_int!(Int248, "int248");
+impl_encode_int!(Uint248, "uint248");
+impl_encode_int!(Int256, "int256");
+impl_encode_int!(Uint256, "uint256");

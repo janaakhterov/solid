@@ -1,6 +1,7 @@
 use crate::{
     decode::Decode,
     encode::Encode,
+    into_type::IntoType,
 };
 
 pub struct Bytes<'a>(pub &'a [u8]);
@@ -38,5 +39,11 @@ impl<'a> Decode<'a> for Bytes<'a> {
 impl<'a> serde::ser::Serialize for Bytes<'a> {
     fn serialize<S: serde::ser::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         serializer.serialize_bytes(&self.0)
+    }
+}
+
+impl<'a> IntoType for Bytes<'a> {
+    fn into_type() -> String {
+        "bytes".to_string()
     }
 }

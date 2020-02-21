@@ -12,3 +12,4 @@ solidity-core = { path = "../solidity-core", default-feautures = false }
 
 [lib]
 proc-macro = true
+crate-type = ["proc-macro"]

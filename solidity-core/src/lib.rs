@@ -1,5 +1,5 @@
-#![feature(const_generics)]
-#![feature(const_generic_impls_guard)]
+#![cfg_attr(feature = "nightly", feature(const_generics))]
+#![cfg_attr(feature = "nightly", feature(const_generic_impls_guard))]
 
 #![allow(dead_code)]
 

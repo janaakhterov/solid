@@ -4,7 +4,11 @@ extern crate syn;
 #[macro_use]
 extern crate quote;
 
+#[cfg(not(feature = "nightly"))]
+extern crate proc_macro;
+
 use proc_macro::TokenStream;
+
 use syn::{
     braced,
     parse::{

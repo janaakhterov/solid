@@ -1,6 +1,5 @@
 #![cfg_attr(feature = "nightly", feature(const_generics))]
 #![cfg_attr(feature = "nightly", feature(const_generic_impls_guard))]
-
 #![allow(dead_code)]
 
 pub mod address;
@@ -26,3 +25,6 @@ pub use crate::error::{
 
 #[cfg(feature = "derive")]
 pub mod derive;
+
+#[cfg(feature = "fixedmxn")]
+pub mod fixed;

@@ -3,7 +3,6 @@ pub use solidity_derive as derive;
 
 pub use solidity_core::{
     address::Address,
-    function::Function,
     builder::Builder,
     bytes::Bytes,
     bytesfix::*,
@@ -13,9 +12,13 @@ pub use solidity_core::{
         Error,
         Result,
     },
+    function::Function,
     int::*,
     selector::Selector,
 };
 
 #[cfg(feature = "serde")]
 pub use solidity_core::derive::to_bytes;
+
+#[cfg(feature = "fixed")]
+pub use solidity_core::fixed::*;

@@ -13,8 +13,12 @@ hex = "0.4.0"
 anyhow = "1.0.26"
 serde = { version = "1.0.104", features = [ "derive" ], optional = true }
 thiserror = "1.0.10"
+num-bigint = { version = "0.2.6", optional = true }
+fixed = { version = "0.5.4", optional = true }
 
 [features]
 default = [ "serde" ]
 derive = [ "serde" ]
 nightly = []
+bigint = [ "num-bigint" ]
+fixedmxn = [ "fixed" ]

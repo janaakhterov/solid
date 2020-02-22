@@ -24,3 +24,7 @@ serde = [ "solidity-core/derive" ]
 derive = [ "solidity-derive" ]
 
 nightly = [ "solidity-core/nightly" ]
+
+bigint = [ "solidity-core/bigint" ]
+
+fixed = [ "solidity-core/fixedmxn" ]

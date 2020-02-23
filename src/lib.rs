@@ -20,5 +20,5 @@ pub use solidity_core::{
 #[cfg(feature = "serde")]
 pub use solidity_core::derive::to_bytes;
 
-#[cfg(feature = "fixed")]
-pub use solidity_core::fixed::*;
+// #[cfg(feature = "fixed")]
+// pub use solidity_core::fixed::*;

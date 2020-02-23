@@ -9,6 +9,12 @@ use fixed::types::{
 };
 use std::convert::TryInto;
 
+// I'm not enitrely sure if the `fixed` crate is the same thing as
+// the `fixed` type in the Solidity ABI. What made me unsure is
+// Solidity states that the value v for a fixed value is `v / (10 ** N)`
+// The fixed crate does not say anything about this, and I haven't worked
+// with fixed percision numbers so while I don't completely understand what's
+// going on I'm going to hold on on adding `fixed` crate support.
 macro_rules! impl_fixed {
     ($ty: ident, $solidity_type: expr) => {
         impl<Frac> Encode for $ty<Frac> {

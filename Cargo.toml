@@ -27,4 +27,4 @@ nightly = [ "solidity-core/nightly" ]
 
 bigint = [ "solidity-core/bigint" ]
 
-fixed = [ "solidity-core/fixedmxn" ]
+# fixed = [ "solidity-core/fixedmxn" ]

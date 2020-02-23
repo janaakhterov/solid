@@ -26,5 +26,5 @@ pub use crate::error::{
 #[cfg(feature = "derive")]
 pub mod derive;
 
-#[cfg(feature = "fixedmxn")]
-pub mod fixed;
+// #[cfg(feature = "fixedmxn")]
+// pub mod fixed;

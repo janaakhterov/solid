@@ -4,21 +4,11 @@ use proc_macro2::TokenStream;
 pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
     let ident = &ast.ident;
 
-    let count = ast.fields.iter().filter_map(|field| {
-        field.ident.as_ref()
-    }).count();
+    let count = ast.fields.iter().count();
 
-    let field = ast.fields.iter().filter_map(|field| {
-        field.ident.as_ref()
-    });
+    let field = ast.fields.iter().map(|field| field.ident.clone());
 
-    let ty = ast.fields.iter().filter_map(|field| {
-        if let Some(_) = field.ident {
-            Some(field.ty.clone())
-        } else {
-            None
-        }
-    });
+    let ty = ast.fields.iter().map(|field| field.ty.clone());
 
     let encode = quote! {
         fn encode(self) -> Vec<u8> {
@@ -45,19 +35,11 @@ pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
         }
     };
 
-    let field = ast.fields.iter().filter_map(|field| {
-        field.ident.as_ref()
-    });
+    let field = ast.fields.iter().map(|field| field.ident.clone());
 
-    let ty = ast.fields.iter().filter_map(|field| {
-        if let Some(_) = field.ident {
-            Some(field.ty.clone())
-        } else {
-            None
-        }
-    });
+    let ty = ast.fields.iter().map(|field| field.ty.clone());
 
-    let required_len = quote ! {
+    let required_len = quote! {
         fn required_len(&self) -> u64 {
             let mut len = 0u64;
 
@@ -79,8 +61,14 @@ pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
         }
     };
 
+    let header = if let Some(lifetimes) = &ast.lifetimes {
+        quote! { impl<#lifetimes> Encode for #ident }
+    } else {
+        quote! { impl Encode for #ident }
+    };
+
     quote! {
-        impl Encode for #ident {
+        #header {
             #encode
 
             #required_len

@@ -4,6 +4,7 @@ use crate::{
     selector::Selector,
 };
 
+#[derive(Default)]
 pub struct Builder {
     name: Option<String>,
     selector: Selector,
@@ -12,11 +13,7 @@ pub struct Builder {
 
 impl Builder {
     pub fn new() -> Self {
-        Builder {
-            name: None,
-            selector: Selector::new(),
-            params: Vec::new(),
-        }
+        Builder::default()
     }
 
     pub fn name(mut self, name: String) -> Self {

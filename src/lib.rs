@@ -5,7 +5,7 @@ pub use solidity_core::{
     address::Address,
     builder::Builder,
     bytes::Bytes,
-    bytesfix::*,
+    bytesfix::stable::*,
     decode::Decode,
     encode::Encode,
     error::{
@@ -13,12 +13,18 @@ pub use solidity_core::{
         Result,
     },
     function::Function,
-    int::*,
+    int::stable::*,
     selector::Selector,
 };
 
 #[cfg(feature = "serde")]
 pub use solidity_core::derive::to_bytes;
+
+#[cfg(feature = "nightly")]
+pub use solidity_core::bytesfix::nightly::*;
+
+#[cfg(feature = "nightly")]
+pub use solidity_core::int::nightly::*;
 
 // #[cfg(feature = "fixed")]
 // pub use solidity_core::fixed::*;

@@ -4,13 +4,14 @@ use sha3::{
     Keccak256,
 };
 
+#[derive(Default)]
 pub struct Selector {
     params: Vec<String>,
 }
 
 impl Selector {
     pub fn new() -> Self {
-        Selector { params: Vec::new() }
+        Selector::default()
     }
 
     pub fn add<T: IntoType>(mut self) -> Self {

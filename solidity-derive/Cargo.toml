@@ -6,10 +6,9 @@ edition = "2018"
 
 [dependencies]
 proc-macro2 = "1.0.8"
-syn = "1.0.14"
+syn = { version = "1.0.14", features = [ "full" ] }
 quote = "1.0.2"
-solidity-core = { path = "../solidity-core", default-feautures = false }
+solidity-core = { path = "../solidity-core", default-features = false }
 
 [lib]
 proc-macro = true
-crate-type = ["proc-macro"]

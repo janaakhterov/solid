@@ -1,3 +1,4 @@
+#[cfg(feature = "derive")]
 use serde::{
     de,
     ser,
@@ -20,12 +21,14 @@ pub enum Error {
     FromHexError(#[from] hex::FromHexError),
 }
 
+#[cfg(feature = "derive")]
 impl ser::Error for Error {
     fn custom<T: fmt::Display>(msg: T) -> Self {
         Error::Message(msg.to_string())
     }
 }
 
+#[cfg(feature = "derive")]
 impl de::Error for Error {
     fn custom<T: fmt::Display>(msg: T) -> Self {
         Error::Message(msg.to_string())

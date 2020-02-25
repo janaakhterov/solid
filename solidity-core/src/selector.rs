@@ -14,12 +14,12 @@ impl Selector {
         Selector::default()
     }
 
-    pub fn add<T: IntoType>(mut self) -> Self {
+    pub fn push<T: IntoType>(mut self) -> Self {
         self.params.push(T::into_type());
         self
     }
 
-    pub fn build(self, name: String) -> [u8; 4] {
+    pub fn build(self, name: &str) -> [u8; 4] {
         let signature = format!("{}({})", name, self.params.join(","));
         let mut sig = [0; 4];
         let mut hasher = Keccak256::new();

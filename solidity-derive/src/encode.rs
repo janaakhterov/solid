@@ -1,14 +1,29 @@
-use super::ItemStruct;
 use proc_macro2::TokenStream;
+use syn::{
+    Data,
+    DeriveInput,
+    Fields,
+};
 
-pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
+pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ident = &ast.ident;
+    let (impl_generics, ty_generics, where_clause) = &ast.generics.split_for_impl();
 
-    let count = ast.fields.iter().count();
+    let fields = match &ast.data {
+        Data::Struct(data) => match &data.fields {
+            Fields::Named(fields) => &fields.named,
+            Fields::Unnamed(fields) => &fields.unnamed,
+            Fields::Unit => todo!(),
+        },
 
-    let field = ast.fields.iter().map(|field| field.ident.clone());
+        _ => todo!(),
+    };
 
-    let ty = ast.fields.iter().map(|field| field.ty.clone());
+    let count = fields.iter().count();
+
+    let field = fields.iter().map(|field| field.ident.clone());
+
+    let ty = fields.iter().map(|field| field.ty.clone());
 
     let encode = quote! {
         fn encode(self) -> Vec<u8> {
@@ -21,7 +36,7 @@ pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
 
             #(
                 let bytes = self.#field.encode();
-                if #ty::is_dynamic() {
+                if <#ty as Encode>::is_dynamic() {
                     buf[index * 32..(index + 1) * 32].copy_from_slice(&(offset as u64).encode());
                     buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                     offset += bytes.len();
@@ -35,16 +50,16 @@ pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
         }
     };
 
-    let field = ast.fields.iter().map(|field| field.ident.clone());
+    let field = fields.iter().map(|field| field.ident.clone());
 
-    let ty = ast.fields.iter().map(|field| field.ty.clone());
+    let ty = fields.iter().map(|field| field.ty.clone());
 
     let required_len = quote! {
         fn required_len(&self) -> u64 {
             let mut len = 0u64;
 
             #(
-                len += if #ty::is_dynamic() {
+                len += if <#ty as Encode>::is_dynamic() {
                     32 + self.#field.required_len()
                 } else {
                     32
@@ -61,14 +76,15 @@ pub(super) fn impl_encode(ast: &ItemStruct) -> TokenStream {
         }
     };
 
-    let header = if let Some(lifetimes) = &ast.lifetimes {
-        quote! { impl<#lifetimes> Encode for #ident }
-    } else {
-        quote! { impl Encode for #ident }
-    };
+    // let header = if let Some(lifetimes) = &ast.lifetimes {
+    //     quote! { impl<#lifetimes> Encode for #ident }
+    // } else {
+    //     quote! { impl Encode for #ident }
+    // };
 
     quote! {
-        #header {
+
+    impl #impl_generics Encode for #ident #ty_generics #where_clause {
             #encode
 
             #required_len

@@ -156,9 +156,9 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_char(self, _value: char) -> Result<()> {
-        return Err(Error::Message(
+        Err(Error::Message(
             "Solidity does nnot support 'char' as a type".to_string(),
-        ));
+        ))
     }
 
     fn serialize_str(self, value: &str) -> Result<()> {

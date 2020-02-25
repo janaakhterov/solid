@@ -62,12 +62,6 @@ impl IntoType for u128 {
     }
 }
 
-impl IntoType for String {
-    fn into_type() -> String {
-        "string".to_string()
-    }
-}
-
 impl<T> IntoType for Vec<T>
 where
     T: IntoType,

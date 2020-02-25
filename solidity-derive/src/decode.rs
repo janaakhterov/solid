@@ -1,57 +1,76 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{
+    Span,
+    TokenStream,
+};
 use syn::{
+    punctuated::Punctuated,
+    token::Add,
     Data,
     DeriveInput,
     Fields,
-    FieldsNamed,
-    FieldsUnnamed,
+    GenericParam,
+    Lifetime,
+    LifetimeDef,
+    Token,
 };
 
-pub(super) fn impl_decode(ast: &DeriveInput) -> TokenStream {
+pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {
     let ident = &ast.ident;
 
-    match &ast.data {
-        Data::Struct(ref data) => {
-            let fields = match &data.fields {
-                Fields::Named(FieldsNamed { named, .. }) => named,
-                Fields::Unnamed(FieldsUnnamed { unnamed, .. }) => unnamed,
-                Fields::Unit => unimplemented!(),
-            };
+    let mut lifetime = LifetimeDef::new(Lifetime::new("'solidity", Span::call_site()));
+    let mut bounds = Punctuated::<Lifetime, Add>::new();
 
-            let field = fields.iter().filter_map(|field| field.ident.as_ref());
+    for param in ast.generics.lifetimes() {
+        bounds.push(param.lifetime.clone());
+    }
 
-            let ty = fields.iter().filter_map(|field| {
-                if let Some(_) = field.ident {
-                    Some(field.ty.clone())
-                } else {
-                    None
-                }
-            });
+    lifetime.bounds = bounds;
 
-            quote! {
-                impl<'a> Decode<'a> for #ident {
-                    fn decode(buf: &'a [u8]) -> Self {
-                        let mut index = 0;
+    let mut generics = ast.generics.clone();
+    generics.params.push(GenericParam::Lifetime(lifetime));
 
-                        Self {
-                            #(
-                                #field: {
-                                    let value = if #ty::is_dynamic() {
-                                        let offset = u64::decode(&buf[32 + index * 32..32 + (index + 1) * 32]) as usize;
-                                        #ty::decode(&buf[offset..])
-                                    } else {
-                                        #ty::decode(&buf[32 + index * 32..32 + (index + 1) * 32])
-                                    };
-                                    index += 1;
-                                    value
-                                },
-                            )*
-                        }
-                    }
+    let (_, ty_generics, where_clause) = &ast.generics.split_for_impl();
+
+    let fields = match &ast.data {
+        Data::Struct(ref data) => match &data.fields {
+            Fields::Named(fields) => &fields.named,
+            Fields::Unnamed(fields) => &fields.unnamed,
+            Fields::Unit => return quote! {},
+        },
+
+        _ => panic!("Solidity does not support enums are unsupported"),
+    };
+
+    let field = fields.iter().filter_map(|field| field.ident.as_ref());
+
+    let ty = fields.iter().filter_map(|field| {
+        if let Some(_) = field.ident {
+            Some(field.ty.clone())
+        } else {
+            None
+        }
+    });
+
+    quote! {
+        impl #generics Decode<'solidity> for #ident #ty_generics #where_clause {
+            fn decode(buf: &'solidity [u8]) -> Self {
+                let mut index = 0;
+
+                Self {
+                    #(
+                        #field: {
+                            let value = if <#ty as Encode>::is_dynamic() {
+                                let offset = u64::decode(&buf[32 + index * 32..32 + (index + 1) * 32]) as usize;
+                                <#ty as Decode>::decode(&buf[offset..])
+                            } else {
+                                <#ty as Decode>::decode(&buf[32 + index * 32..32 + (index + 1) * 32])
+                            };
+                            index += 1;
+                            value
+                        },
+                    )*
                 }
             }
         }
-
-        _ => unimplemented!(),
     }
 }

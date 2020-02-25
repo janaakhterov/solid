@@ -5,24 +5,24 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct Builder {
-    name: Option<String>,
+pub struct Builder<'a> {
+    name: Option<&'a str>,
     selector: Selector,
     pub(super) params: Vec<(bool, Vec<u8>)>,
 }
 
-impl Builder {
+impl<'a> Builder<'a> {
     pub fn new() -> Self {
         Builder::default()
     }
 
-    pub fn name(mut self, name: String) -> Self {
+    pub fn name(mut self, name: &'a str) -> Self {
         self.name = Some(name);
         self
     }
 
-    pub fn add<F: Encode + IntoType>(mut self, value: F) -> Self {
-        self.selector = self.selector.add::<F>();
+    pub fn push<F: Encode + IntoType>(mut self, value: F) -> Self {
+        self.selector = self.selector.push::<F>();
         self.params.push((F::is_dynamic(), value.encode()));
         self
     }

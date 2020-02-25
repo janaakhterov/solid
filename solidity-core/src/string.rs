@@ -1,6 +1,7 @@
 use crate::{
     decode::Decode,
     encode::Encode,
+    into_type::IntoType,
 };
 
 impl Encode for String {
@@ -32,6 +33,12 @@ impl<'a> Decode<'a> for String {
     }
 }
 
+impl IntoType for String {
+    fn into_type() -> String {
+        "string".to_string()
+    }
+}
+
 impl Encode for &str {
     fn encode(self) -> Vec<u8> {
         let len = self.required_len();
@@ -51,5 +58,11 @@ impl Encode for &str {
 
     fn is_dynamic() -> bool {
         true
+    }
+}
+
+impl IntoType for &str {
+    fn into_type() -> String {
+        "string".to_string()
     }
 }

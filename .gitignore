@@ -8,3 +8,5 @@ solidity-core/target
 solidity-core/Cargo.lock
 
 .#*
+
+TAGS

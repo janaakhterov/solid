@@ -17,6 +17,12 @@ pub use solidity_core::{
     selector::Selector,
 };
 
+#[cfg(feature = "nightly")]
+pub use solidity_core::bytesfix::nightly::*;
+
+#[cfg(feature = "nightly")]
+pub use solidity_core::int::nightly::*;
+
 #[cfg(feature = "serde")]
 pub use solidity_core::derive::to_bytes;
 

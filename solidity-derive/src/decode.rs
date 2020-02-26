@@ -11,7 +11,6 @@ use syn::{
     GenericParam,
     Lifetime,
     LifetimeDef,
-    Token,
 };
 
 pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {

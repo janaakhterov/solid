@@ -33,7 +33,7 @@ struct ContractCallEncode<'a> {
 // If you need to support more types you'll have to use the `Encode` derive
 // macro, or use the `solidity::Builder` manually.
 #[derive(Serialize)]
-pub struct ContractCallSerialize<'a> {
+pub struct ContractCallSerde<'a> {
     pub name: String,
     pub number: u128,
     pub bytes: Bytes<'a>,
@@ -66,6 +66,19 @@ struct ContractCallResponse<'a> {
     address: Address,
 }
 
+// Basic usage with serde's `Deserialize` derive macro.
+// (Requires the `serde` feature.)
+// Note: Serde only supports a subset of the types that Solidity supports.
+// If you need to support more types you'll have to use the `Encode` derive
+// macro, or use the `solidity::Builder` manually.
+#[derive(Deserialize)]
+struct ContractCallResponseSerde<'a> {
+    int: u128,
+    bytes: &'a [u8],
+    // There is no way to read `Address` with serde.
+    // address: Address,
+}
+
 // Support for composite types and `Vec`
 #[derive(Encode)]
 struct ContractCallComposite {
@@ -84,7 +97,7 @@ pub fn main() -> Result<()> {
     };
 
     // Uses `serde::Serialize`
-    let call_serialize = ContractCallSerialize {
+    let call_serialize = ContractCallSerde {
         name: "daniel".to_string(),
         number: 10,
         // Unsupported by serde

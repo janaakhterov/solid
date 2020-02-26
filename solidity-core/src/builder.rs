@@ -53,8 +53,7 @@ impl<'a> Builder<'a> {
             if dynamic {
                 buf[index * 32 + 24 + name_offset..(index + 1) * 32 + name_offset]
                     .copy_from_slice(&(offset as u64).to_be_bytes());
-                buf[offset + name_offset..offset + name_offset + bytes.len()]
-                    .copy_from_slice(&bytes);
+                buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                 offset += bytes.len()
             } else {
                 buf[index * 32 + name_offset..(index + 1) * 32 + name_offset]
@@ -63,7 +62,7 @@ impl<'a> Builder<'a> {
         }
 
         if let Some(sig) = sig {
-            buf.copy_from_slice(&sig)
+            buf[0..4].copy_from_slice(&sig)
         }
 
         buf

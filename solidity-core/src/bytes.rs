@@ -35,6 +35,12 @@ impl<'a> Decode<'a> for Bytes<'a> {
     }
 }
 
+impl<'a> IntoType for Bytes<'a> {
+    fn into_type() -> String {
+        "bytes".to_string()
+    }
+}
+
 #[cfg(feature = "derive")]
 impl<'a> serde::ser::Serialize for Bytes<'a> {
     fn serialize<S: serde::ser::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -42,8 +48,27 @@ impl<'a> serde::ser::Serialize for Bytes<'a> {
     }
 }
 
-impl<'a> IntoType for Bytes<'a> {
-    fn into_type() -> String {
-        "bytes".to_string()
+#[cfg(feature = "derive")]
+impl<'de> serde::de::Deserialize<'de> for Bytes<'de> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        deserializer.deserialize_bytes(BytesVisitor)
+    }
+}
+
+struct BytesVisitor;
+
+#[cfg(feature = "derive")]
+impl<'de> serde::de::Visitor<'de> for BytesVisitor {
+    type Value = Bytes<'de>;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("bytes array")
+    }
+
+    fn visit_borrowed_bytes<E: serde::de::Error>(self, value: &'de [u8]) -> Result<Self::Value, E> {
+        Ok(Bytes(value))
     }
 }

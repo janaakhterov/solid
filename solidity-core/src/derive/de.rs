@@ -44,7 +44,6 @@ impl<'de> Deserializer<'de> {
     where
         T: Decode<'de> + Encode,
     {
-        println!("[Deserialize] dyanmic: {}", T::is_dynamic());
         let value = if T::is_dynamic() {
             let offset = u64::decode(&self.buf[self.index * 32..(self.index + 1) * 32]);
             T::decode(&self.buf[offset as usize..])
@@ -64,57 +63,46 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     }
 
     fn deserialize_bool<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i8");
         visitor.visit_bool(self.decode::<bool>()?)
     }
 
     fn deserialize_i8<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i8");
         visitor.visit_i8(self.decode::<i8>()?)
     }
 
     fn deserialize_i16<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i16");
         visitor.visit_i16(self.decode::<i16>()?)
     }
 
     fn deserialize_i32<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i32");
         visitor.visit_i32(self.decode::<i32>()?)
     }
 
     fn deserialize_i64<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i64");
         visitor.visit_i64(self.decode::<i64>()?)
     }
 
     fn deserialize_i128<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] i128");
         visitor.visit_i128(self.decode::<i128>()?)
     }
 
     fn deserialize_u8<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] u8");
         visitor.visit_u8(self.decode::<u8>()?)
     }
 
     fn deserialize_u16<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] u16");
         visitor.visit_u16(self.decode::<u16>()?)
     }
 
     fn deserialize_u32<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] u32");
         visitor.visit_u32(self.decode::<u32>()?)
     }
 
     fn deserialize_u64<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] u64");
         visitor.visit_u64(self.decode::<u64>()?)
     }
 
     fn deserialize_u128<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] u128");
         visitor.visit_u128(self.decode::<u128>()?)
     }
 
@@ -134,24 +122,21 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut Deserializer<'de> {
     }
 
     fn deserialize_str<V: Visitor<'de>>(self, _visitor: V) -> Result<V::Value> {
-        unimplemented!();
+        todo!();
         // visitor.visit_borrowed_str(&self.decode::<String>()?)
     }
 
     fn deserialize_string<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] String");
         visitor.visit_string(self.decode::<String>()?)
     }
 
     fn deserialize_byte_buf<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] BytesBuf");
         visitor.visit_byte_buf(self.decode::<Bytes>()?.0.to_vec())
     }
 
     // The `Serializer` implementation on the previous page serialized byte
     // arrays as JSON arrays of bytes. Handle that representation here.
     fn deserialize_bytes<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value> {
-        println!("[Deserialize] Bytes");
         visitor.visit_borrowed_bytes(&self.decode::<Bytes>()?.0)
     }
 

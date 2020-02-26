@@ -24,7 +24,7 @@ impl Selector {
         let mut sig = [0; 4];
         let mut hasher = Keccak256::new();
         hasher.input(&signature);
-        sig.copy_from_slice(&hasher.result());
+        sig.copy_from_slice(&hasher.result()[0..4]);
         sig
     }
 }

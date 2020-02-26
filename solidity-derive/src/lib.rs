@@ -10,21 +10,8 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 use syn::{
-    braced,
-    parse::{
-        Parse,
-        ParseStream,
-    },
     parse_macro_input,
-    punctuated::Punctuated,
     DeriveInput,
-    Field,
-    Ident,
-    Lifetime,
-    LifetimeDef,
-    Result,
-    Token,
-    Type,
 };
 
 mod decode;

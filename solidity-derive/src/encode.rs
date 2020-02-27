@@ -1,6 +1,5 @@
 use proc_macro2::{
     Literal,
-    Span,
     TokenStream,
 };
 use syn::{
@@ -38,7 +37,6 @@ impl Parse for Solidity {
 pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ident = &ast.ident;
 
-    let mut attribute: Option<Solidity> = None;
     let mut has_name = true;
     let mut name = Literal::string(ident.to_string().as_str());
     for attr in &ast.attrs {

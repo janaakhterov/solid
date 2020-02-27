@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use serde::{
     Deserialize,
     Serialize,
@@ -80,8 +81,9 @@ struct ContractCallResponse<'a> {
 struct ContractCallResponseSerde<'a> {
     int: u128,
     bytes: &'a [u8],
-    memo: &'a str, // There is no way to read `Address` with serde.
-                   // address: Address
+    memo: &'a str,
+    // There is no way to read `Address` with serde.
+    // address: Address
 }
 
 // Support for composite types and `Vec`
@@ -124,7 +126,7 @@ pub fn main() -> Result<()> {
     let _constructor_bytes = constructor.encode();
 
     // Manually construct the function
-    let function = Builder::new()
+    let _function = Builder::new()
         .name("transfer")
         .push("daniel")
         .push(10u128)

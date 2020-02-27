@@ -26,7 +26,7 @@ use solidity::{
 // (Requires the `derive` feature.)
 #[derive(Encode)]
 struct ContractCallEncode<'a> {
-    pub name: String,
+    pub name: &'a str,
     pub number: u128,
     pub bytes10: Bytes10,
     pub bytes: Bytes<'a>,
@@ -38,7 +38,9 @@ struct ContractCallEncode<'a> {
 // macro, or use the `solidity::Builder` manually.
 #[derive(Serialize)]
 pub struct ContractCallSerde<'a> {
-    pub name: String,
+    // String is also supported, but it's recommened you use &str when possible.
+    // pub name: String,
+    pub name: &'a str,
     pub number: u128,
     pub bytes: Bytes<'a>,
     // Bytes10 cannot be serialized correctly using serde.
@@ -52,10 +54,9 @@ pub struct ContractCallSerde<'a> {
 // where `<function_name>` is the name of your function.
 // ie. `#[solidity(name = "transfer")]`.
 #[derive(Encode)]
-#[solidity(constructor)]
-struct ContractConstructorEncode {
+struct ContractConstructorEncode<'a> {
     pub value: u128,
-    pub string: String,
+    pub string: &'a str,
 }
 
 // Basic usage with the built in `Decode` derive macro.
@@ -66,7 +67,11 @@ struct ContractConstructorEncode {
 #[derive(Decode)]
 struct ContractCallResponse<'a> {
     int: Uint256,
+    // Note: &'a [u8] is *not* the same as `Bytes<'a>`. The former is is `uint8[]` in solidity
+    // while the latter is `bytes`. The two types are encoded very differently so decoding
+    // `bytes` as `uint8[]` array will give you invalid data if not fail outright.
     bytes: Bytes<'a>,
+    memo: &'a str,
     address: Address,
 }
 
@@ -79,17 +84,19 @@ struct ContractCallResponse<'a> {
 struct ContractCallResponseSerde<'a> {
     int: u128,
     bytes: &'a [u8],
+    memo: &'a str, 
     // There is no way to read `Address` with serde.
-    // address: Address,
+    // address: Address
 }
 
 // Support for composite types and `Vec`
 #[derive(Encode)]
-struct ContractCallComposite {
-    to: (String, u128),
-    memos: Vec<String>,
-    matrix: Vec<Vec<Vec<u8>>>,
+struct ContractCallComposite<'a> {
+    to: (&'a str, u128),
+    memos: &'a [&'a str],
+    matrix: &'a [&'a [&'a [u8]]],
 }
+
 
 ```
 

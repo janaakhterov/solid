@@ -103,3 +103,17 @@ struct ContractCallComposite<'a> {
 ### `num_bigint` Support
 
 If you'd like support for `num_bigint` enable the `bigint` feature.
+
+``` rust
+// Note: BigInt is variable sized and encodes to `int256`.
+// To encode to `uint256` use the `BigUint` struct.
+// Also, BigInt supports numbers larger than the max value a uint256 can store, so the value
+// will be truncated to 32 bytes before it's encoded.
+#[derive(Encode)]
+#[solidity(rename = "transfer")]
+struct ContractTransfer<'a> {
+    amount: BigInt,
+    to: &'a str
+}
+```
+

@@ -1,4 +1,8 @@
 #![allow(dead_code)]
+use num_bigint::{
+    BigInt,
+    ToBigInt,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -94,6 +98,17 @@ struct ContractCallComposite<'a> {
     matrix: &'a [&'a [&'a [u8]]],
 }
 
+// Note: BigInt is variable sized and encodes to `int256`.
+// To encode to `uint256` use the `BigUint` struct.
+// Also, BigInt supports numbers larger than the max value a uint256 can store, so the value
+// will be truncated to 32 bytes before it's encoded.
+#[derive(Encode)]
+#[solidity(rename = "transfer")]
+struct ContractTransfer<'a> {
+    amount: BigInt,
+    to: &'a str,
+}
+
 pub fn main() -> Result<()> {
     // Uses `derive::Encode`
     let call_encode = ContractCallEncode {
@@ -141,6 +156,13 @@ pub fn main() -> Result<()> {
     };
 
     let _composite_bytes = composite.encode();
+
+    let bigint = ContractTransfer {
+        amount: 1_000_000_000.to_bigint().unwrap(),
+        to: "daniel",
+    };
+
+    let _bigint_bytes = bigint.encode();
 
     Ok(())
 }

@@ -9,7 +9,7 @@ use num_bigint::{
 };
 
 impl Encode for BigInt {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let mut bytes = self.to_signed_bytes_be();
 
         let sign = (bytes[0] & 0x80) as u8;
@@ -49,7 +49,7 @@ impl IntoType for BigInt {
 }
 
 impl Encode for BigUint {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let mut bytes = self.to_bytes_be();
 
         match bytes.len() {

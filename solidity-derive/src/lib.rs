@@ -17,14 +17,14 @@ use syn::{
 mod decode;
 mod encode;
 
-#[proc_macro_derive(Encode)]
+#[proc_macro_derive(Encode, attributes(solidity))]
 pub fn encode(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     TokenStream::from(encode::impl_encode(&ast))
 }
 
-#[proc_macro_derive(Decode)]
+#[proc_macro_derive(Decode, attributes(solidity))]
 pub fn decode(input: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(input as DeriveInput);
 

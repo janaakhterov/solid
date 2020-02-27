@@ -1,17 +1,62 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{
+    Literal,
+    Span,
+    TokenStream,
+};
 use syn::{
+    parse::{
+        Parse,
+        ParseStream,
+    },
     Data,
     DeriveInput,
     Fields,
+    Ident,
+    Result,
+    Token,
 };
+
+#[derive(Debug)]
+struct Solidity {
+    ident: Ident,
+    name: Option<Literal>,
+}
+
+impl Parse for Solidity {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let ident: Ident = input.parse()?;
+        let name = if let Ok(_) = input.parse::<Token![=]>() {
+            Some(input.parse::<Literal>()?)
+        } else {
+            None
+        };
+
+        Ok(Self { ident, name })
+    }
+}
 
 pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ident = &ast.ident;
 
+    let mut attribute: Option<Solidity> = None;
+    let mut has_name = true;
+    let mut name = Literal::string(ident.to_string().as_str());
     for attr in &ast.attrs {
-        match attr.style {
-            syn::AttrStyle::Outer => eprintln!("{}", quote! { "AttrStyle: Outer" }),
-            syn::AttrStyle::Inner(_) => eprintln!("{}", quote! { "AttrStyle: Inner" }),
+        if let Some(ident) = &attr.path.get_ident() {
+            if ident.to_string() == "solidity" {
+                let attribute = attr.parse_args::<Solidity>().unwrap();
+                match attribute.ident.to_string().as_str() {
+                    "constructor" => {
+                        has_name = false;
+                    }
+
+                    "rename" => {
+                        name = attribute.name.unwrap();
+                    }
+
+                    attribute => panic!("Unsupported key for solidity attribute: {:?}. Supported attribute keys are `rename` and `constructor`", attribute),
+                }
+            }
         }
     }
 
@@ -37,21 +82,27 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
     let encode = quote! {
         fn encode(&self) -> Vec<u8> {
-            let len = self.required_len();
+            let name_offset: usize = if #has_name {
+                4
+            } else {
+                0
+            };
+
+            let len = self.required_len() + name_offset as u64;
 
             let mut buf = vec![0u8; len as usize];
 
-            let mut offset = (#count * 32) as usize;
+            let mut offset = (#count * 32) as usize + name_offset;
             let mut index = 0usize;
 
-            // if #has_name {
-            //     let mut selector = solidity::Selector::new();
-            //     #(
-            //         selector = selector.push::<#ty2>();
-            //     )*
+            if #has_name {
+                let mut selector = solidity::Selector::new();
+                #(
+                    selector = selector.push::<#ty2>();
+                )*
 
-            //     selector.build(stringify!(#ident));
-            // }
+                buf[0..4].copy_from_slice(&selector.build(#name));
+            }
 
             #(
                 let bytes = self.#field.encode();
@@ -60,7 +111,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
                     buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                     offset += bytes.len();
                 } else {
-                    buf[index * 32..(index + 1) * 32].copy_from_slice(&bytes);
+                    buf[index * 32 + name_offset..(index + 1) * 32 + name_offset].copy_from_slice(&bytes);
                 }
                 index += 1;
             )*

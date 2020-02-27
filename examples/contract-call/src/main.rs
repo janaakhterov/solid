@@ -4,7 +4,6 @@ use serde::{
 };
 use solidity::{
     derive::{
-        solidity,
         Decode,
         Encode,
     },
@@ -50,7 +49,6 @@ pub struct ContractCallSerde<'a> {
 // name. To rename the function use the `#[solidity(name = "<function_name>")]`
 // where `<function_name>` is the name of your function.
 // ie. `#[solidity(name = "transfer")]`.
-#[solidity(constructor)]
 #[derive(Encode)]
 struct ContractConstructorEncode<'a> {
     pub value: u128,
@@ -103,6 +101,8 @@ pub fn main() -> Result<()> {
         bytes: Bytes(&[0xffu8; 53]),
     };
 
+    let _bytes = call_encode.encode();
+
     // Uses `serde::Serialize`
     let call_serialize = ContractCallSerde {
         name: "daniel",
@@ -111,17 +111,17 @@ pub fn main() -> Result<()> {
         // bytes10: Bytes10([1u8; 10]),
         bytes: Bytes(&[0xffu8; 53]),
     };
+
+    // Call `to_bytes(<struct that implements serde::Deserialize>)`
+    to_bytes(&call_serialize)?;
+
     // Uses `serde_derive::Serialize`
     let constructor = ContractConstructorEncode {
         value: 10,
         string: "just a random string",
     };
 
-    // Call `Encode::encode()` to get bytes
-    let _bytes = call_encode.encode();
-
-    // Call `to_bytes(<struct that implements serde::Deserialize>)`
-    to_bytes(&call_serialize)?;
+    let _constructor_bytes = constructor.encode();
 
     // Manually construct the function
     let function = Builder::new()
@@ -138,7 +138,7 @@ pub fn main() -> Result<()> {
         matrix: &[&[&[1, 2, 3], &[4, 5, 6]], &[&[7, 8, 9], &[10, 11, 12]]],
     };
 
-    let _bytes = composite.encode();
+    let _composite_bytes = composite.encode();
 
     Ok(())
 }

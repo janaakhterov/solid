@@ -41,7 +41,7 @@ pub struct Bytes32(pub [u8; 32]);
 macro_rules! impl_into_type_and_encode_bytesfix {
     ($ty: ident, $expr: expr) => {
         impl Encode for $ty {
-            fn encode(self) -> Vec<u8> {
+            fn encode(&self) -> Vec<u8> {
                 let mut buf = vec![0u8; 32];
                 buf[0..self.0.len()].copy_from_slice(&self.0);
                 buf

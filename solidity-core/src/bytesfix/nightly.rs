@@ -3,8 +3,10 @@ use crate::{
     encode::Encode,
     into_type::IntoType,
 };
-use std::convert::TryFrom;
-use std::array::LengthAtMost32;
+use std::{
+    array::LengthAtMost32,
+    convert::TryFrom,
+};
 
 pub struct BytesFix<'a, const N: usize>(pub &'a [u8; N]);
 
@@ -47,9 +49,10 @@ impl_length_at_least_1! {
     30 31 32
 }
 
-
 impl<'a, const N: usize> Decode<'a> for BytesFix<'a, N>
-where [u8; N]: LengthAtMost32 {
+where
+    [u8; N]: LengthAtMost32 + LengthAtLeast1,
+{
     fn decode(buf: &'a [u8]) -> Self {
         BytesFix::<N>(TryFrom::try_from(&buf[0..N]).unwrap())
     }

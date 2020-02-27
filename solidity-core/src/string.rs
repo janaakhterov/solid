@@ -5,7 +5,7 @@ use crate::{
 };
 
 impl Encode for String {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let len = self.required_len();
         let mut buf = vec![0u8; len as usize];
         buf[24..32].copy_from_slice(&(self.len() as u64).to_be_bytes());
@@ -40,7 +40,7 @@ impl IntoType for String {
 }
 
 impl Encode for &str {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let len = self.required_len();
         let mut buf = vec![0u8; len as usize];
         buf[24..32].copy_from_slice(&(self.len() as u64).to_be_bytes());
@@ -64,5 +64,12 @@ impl Encode for &str {
 impl IntoType for &str {
     fn into_type() -> String {
         "string".to_string()
+    }
+}
+
+impl<'a> Decode<'a> for &'a str {
+    fn decode(buf: &'a [u8]) -> Self {
+        let len = u64::decode(&buf[0..32]);
+        std::str::from_utf8(&buf[32..32 + len as usize]).unwrap()
     }
 }

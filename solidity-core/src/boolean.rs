@@ -4,9 +4,9 @@ use crate::{
 };
 
 impl Encode for bool {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let mut buf = vec![0u8; 32];
-        buf[31] = if self { 1 } else { 0 };
+        buf[31] = if *self { 1 } else { 0 };
         buf
     }
 

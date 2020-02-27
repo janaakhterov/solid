@@ -22,7 +22,7 @@ use solidity::{
 // (Requires the `derive` feature.)
 #[derive(Encode)]
 struct ContractCallEncode<'a> {
-    pub name: String,
+    pub name: &'a str,
     pub number: u128,
     pub bytes10: Bytes10,
     pub bytes: Bytes<'a>,
@@ -34,7 +34,9 @@ struct ContractCallEncode<'a> {
 // macro, or use the `solidity::Builder` manually.
 #[derive(Serialize)]
 pub struct ContractCallSerde<'a> {
-    pub name: String,
+    // String is also supported, but it's recommened you use &str when possible.
+    // pub name: String,
+    pub name: &'a str,
     pub number: u128,
     pub bytes: Bytes<'a>,
     // Bytes10 cannot be serialized correctly using serde.
@@ -49,9 +51,9 @@ pub struct ContractCallSerde<'a> {
 // ie. `#[solidity(name = "transfer")]`.
 #[derive(Encode)]
 // #[solidity(constructor)]
-struct ContractConstructorEncode {
+struct ContractConstructorEncode<'a> {
     pub value: u128,
-    pub string: String,
+    pub string: &'a str,
 }
 
 // Basic usage with the built in `Decode` derive macro.
@@ -63,6 +65,7 @@ struct ContractConstructorEncode {
 struct ContractCallResponse<'a> {
     int: Uint256,
     bytes: Bytes<'a>,
+    memo: &'a str,
     address: Address,
 }
 
@@ -75,22 +78,22 @@ struct ContractCallResponse<'a> {
 struct ContractCallResponseSerde<'a> {
     int: u128,
     bytes: &'a [u8],
-    // There is no way to read `Address` with serde.
-    // address: Address,
+    memo: &'a str, // There is no way to read `Address` with serde.
+                   // address: Address
 }
 
 // Support for composite types and `Vec`
 #[derive(Encode)]
-struct ContractCallComposite {
-    to: (String, u128),
-    memos: Vec<String>,
-    matrics: Vec<Vec<Vec<u8>>>,
+struct ContractCallComposite<'a> {
+    to: (&'a str, u128),
+    memos: &'a [&'a str],
+    matrix: &'a [&'a [&'a [u8]]],
 }
 
 pub fn main() -> Result<()> {
     // Uses `derive::Encode`
     let call_encode = ContractCallEncode {
-        name: "daniel".to_string(),
+        name: "daniel",
         number: 10,
         bytes10: Bytes10([1u8; 10]),
         bytes: Bytes(&[0xffu8; 53]),
@@ -98,7 +101,7 @@ pub fn main() -> Result<()> {
 
     // Uses `serde::Serialize`
     let call_serialize = ContractCallSerde {
-        name: "daniel".to_string(),
+        name: "daniel",
         number: 10,
         // Unsupported by serde
         // bytes10: Bytes10([1u8; 10]),
@@ -107,7 +110,7 @@ pub fn main() -> Result<()> {
     // Uses `serde_derive::Serialize`
     let constructor = ContractConstructorEncode {
         value: 10,
-        string: "just a random string".to_string(),
+        string: "just a random string",
     };
 
     // Call `Encode::encode()` to get bytes
@@ -123,6 +126,15 @@ pub fn main() -> Result<()> {
         .push(10u128)
         .push(Bytes10([1u8; 10]))
         .build();
+
+    // Example of the composite struct
+    let composite = ContractCallComposite {
+        to: ("daniel", 10u128),
+        memos: &["This is the first memo.", "This is the second memo."],
+        matrix: &[&[&[1, 2, 3], &[4, 5, 6]], &[&[7, 8, 9], &[10, 11, 12]]],
+    };
+
+    let _bytes = composite.encode();
 
     Ok(())
 }

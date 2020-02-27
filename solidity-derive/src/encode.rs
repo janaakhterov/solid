@@ -26,7 +26,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ty = fields.iter().map(|field| field.ty.clone());
 
     let encode = quote! {
-        fn encode(self) -> Vec<u8> {
+        fn encode(&self) -> Vec<u8> {
             let len = self.required_len();
 
             let mut buf = vec![0u8; len as usize];

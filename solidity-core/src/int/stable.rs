@@ -11,7 +11,7 @@ use std::{
 macro_rules! impl_encode_signed {
     ($ty: ty) => {
         impl Encode for $ty {
-            fn encode(self) -> Vec<u8> {
+            fn encode(&self) -> Vec<u8> {
                 let bits = if self.to_be_bytes()[0] & 0x80 == 0x80 {
                     0xff
                 } else {
@@ -36,7 +36,7 @@ macro_rules! impl_encode_signed {
 macro_rules! impl_encode_unsigned {
     ($ty: ty) => {
         impl Encode for $ty {
-            fn encode(self) -> Vec<u8> {
+            fn encode(&self) -> Vec<u8> {
                 let mut buf = vec![0u8; 32];
                 buf[32 - mem::size_of::<$ty>()..].copy_from_slice(&self.to_be_bytes());
                 buf
@@ -183,7 +183,7 @@ pub struct Uint256(pub [u8; 32]);
 macro_rules! impl_encode_int {
     ($ty: ident, $expr: expr) => {
         impl Encode for $ty {
-            fn encode(self) -> Vec<u8> {
+            fn encode(&self) -> Vec<u8> {
                 self.0.to_vec()
             }
 

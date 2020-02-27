@@ -8,7 +8,7 @@ macro_rules! impl_encode_and_into_types_for_tuples {
 	  ($(($index:tt => $ident:ident) ),+) => {
         #[allow(unused)]
         impl<$($ident: Encode, )+> Encode for ($($ident, )+) {
-            fn encode(self) -> Vec<u8> {
+            fn encode(&self) -> Vec<u8> {
                 let len = self.required_len();
 
                 let mut buf: Vec<u8> = vec![0; len as usize];

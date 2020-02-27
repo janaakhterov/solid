@@ -7,7 +7,7 @@ use crate::{
 pub struct Bytes<'a>(pub &'a [u8]);
 
 impl<'a> Encode for Bytes<'a> {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let len = self.required_len();
         let mut buf = vec![0u8; len as usize];
         buf[24..32].copy_from_slice(&(self.0.len() as u64).to_be_bytes());

@@ -64,7 +64,7 @@ impl TryFrom<Vec<u8>> for Function {
 }
 
 impl Encode for Function {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         self.0.to_vec()
     }
 

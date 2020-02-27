@@ -4,6 +4,7 @@ use serde::{
 };
 use solidity::{
     derive::{
+        solidity,
         Decode,
         Encode,
     },
@@ -49,8 +50,8 @@ pub struct ContractCallSerde<'a> {
 // name. To rename the function use the `#[solidity(name = "<function_name>")]`
 // where `<function_name>` is the name of your function.
 // ie. `#[solidity(name = "transfer")]`.
+#[solidity(constructor)]
 #[derive(Encode)]
-// #[solidity(constructor)]
 struct ContractConstructorEncode<'a> {
     pub value: u128,
     pub string: &'a str,
@@ -64,6 +65,9 @@ struct ContractConstructorEncode<'a> {
 #[derive(Decode)]
 struct ContractCallResponse<'a> {
     int: Uint256,
+    // Note: &'a [u8] is *not* the same as `Bytes<'a>`. The former is is `uint8[]` in solidity
+    // while the latter is `bytes`. The two types are encoded very differently so decoding
+    // `bytes` as `uint8[]` array will give you invalid data if not fail outright.
     bytes: Bytes<'a>,
     memo: &'a str,
     address: Address,

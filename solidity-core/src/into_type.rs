@@ -62,6 +62,15 @@ impl IntoType for u128 {
     }
 }
 
+impl<'a, T> IntoType for &'a [T]
+where
+    T: IntoType,
+{
+    fn into_type() -> String {
+        format!("{}[]", T::into_type())
+    }
+}
+
 impl<T> IntoType for Vec<T>
 where
     T: IntoType,

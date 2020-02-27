@@ -7,6 +7,14 @@ use syn::{
 
 pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ident = &ast.ident;
+
+    for attr in &ast.attrs {
+        match attr.style {
+            syn::AttrStyle::Outer => eprintln!("{}", quote! { "AttrStyle: Outer" }),
+            syn::AttrStyle::Inner(_) => eprintln!("{}", quote! { "AttrStyle: Inner" }),
+        }
+    }
+
     let (impl_generics, ty_generics, where_clause) = &ast.generics.split_for_impl();
 
     let fields = match &ast.data {
@@ -25,6 +33,8 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
     let ty = fields.iter().map(|field| field.ty.clone());
 
+    let ty2 = fields.iter().map(|field| field.ty.clone());
+
     let encode = quote! {
         fn encode(&self) -> Vec<u8> {
             let len = self.required_len();
@@ -33,6 +43,15 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
             let mut offset = (#count * 32) as usize;
             let mut index = 0usize;
+
+            // if #has_name {
+            //     let mut selector = solidity::Selector::new();
+            //     #(
+            //         selector = selector.push::<#ty2>();
+            //     )*
+
+            //     selector.build(stringify!(#ident));
+            // }
 
             #(
                 let bytes = self.#field.encode();

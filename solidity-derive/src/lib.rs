@@ -32,6 +32,6 @@ pub fn decode(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn solidity(_attr: TokenStream, _item: TokenStream) -> TokenStream {
-    (quote! {}).into()
+pub fn solidity(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
 }

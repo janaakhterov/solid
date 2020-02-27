@@ -11,13 +11,13 @@
 //!
 //! ### Usage with the "derive" feature would look like.
 //!
-//! Use `#[solidity(contstructor)]` if you're constructing a contract.
+//! Use `#[solid(contstructor)]` if you're constructing a contract.
 //! Otherwise the name of the struct and the field types will be used
 //! to derive the function signature.
 //!
 //! ```rust
 //! #[derive(Encode)]
-//! #[solidity(rename = "random_function")]
+//! #[solid(rename = "random_function")]
 //! struct ContractCallComposite<'a> {
 //!     to: (&'a str, u128),
 //!     memos: &'a [&'a str],
@@ -37,7 +37,7 @@
 //!
 //! ```rust
 //! #[derive(Serialize)]
-//! #[solidity(rename = "random_function")]
+//! #[solid(rename = "random_function")]
 //! struct ContractCallComposite<'a> {
 //!     to: (&'a str, u128),
 //!     memos: &'a [&'a str],
@@ -57,9 +57,9 @@
 //! ```
 //!
 #[cfg(feature = "derive")]
-pub use solidity_derive as derive;
+pub use solid_derive as derive;
 
-pub use solidity_core::{
+pub use solid_core::{
     address::Address,
     builder::Builder,
     bytes::Bytes,
@@ -76,19 +76,19 @@ pub use solidity_core::{
 };
 
 #[cfg(feature = "nightly")]
-pub use solidity_core::bytesfix::nightly::*;
+pub use solid_core::bytesfix::nightly::*;
 
 #[cfg(feature = "nightly")]
-pub use solidity_core::int::nightly::*;
+pub use solid_core::int::nightly::*;
 
 #[cfg(feature = "serde")]
-pub use solidity_core::derive::to_bytes;
+pub use solid_core::derive::to_bytes;
 
 #[cfg(feature = "nightly")]
-pub use solidity_core::bytesfix::nightly::*;
+pub use solid_core::bytesfix::nightly::*;
 
 #[cfg(feature = "nightly")]
-pub use solidity_core::int::nightly::*;
+pub use solid_core::int::nightly::*;
 
 // #[cfg(feature = "fixed")]
-// pub use solidity_core::fixed::*;
+// pub use solid_core::fixed::*;

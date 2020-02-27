@@ -1,8 +1,8 @@
 [workspace]
 members = [
     ".",
-    "solidity-core",
-    "solidity-derive",
+    "solid-core",
+    "solid-derive",
     "examples/contract-call"
 ]
 
@@ -18,18 +18,18 @@ repository = "https://github.com/danielakhterov/solid"
 keywords = [ "solidity", "encoding", "decoding" ]
 
 [dependencies]
-solidity-derive = { path = "solidity-derive", version = "0.1.0", optional = true }
-solidity-core = { path = "solidity-core", version = "0.1.0", default-features = false }
+solid-derive = { path = "solid-derive", version = "0.1.0", optional = true }
+solid-core = { path = "solid-core", version = "0.1.0", default-features = false }
 
 [features]
 default = [ "serde", "derive" ]
 
-serde = [ "solidity-core/derive" ]
+serde = [ "solid-core/derive" ]
 
-derive = [ "solidity-derive" ]
+derive = [ "solid-derive" ]
 
-nightly = [ "solidity-core/nightly" ]
+nightly = [ "solid-core/nightly" ]
 
-bigint = [ "solidity-core/bigint" ]
+bigint = [ "solid-core/bigint" ]
 
-# fixed = [ "solidity-core/fixedmxn" ]
+# fixed = [ "solid-core/fixedmxn" ]

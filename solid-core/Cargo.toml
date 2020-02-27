@@ -1,8 +1,11 @@
 [package]
-name = "solidity-core"
+name = "solid-core"
 version = "0.1.0"
 authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
 edition = "2018"
+description = "Core for the `solid` crate. Not intended to be used directly."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/danielakhterov/solid"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

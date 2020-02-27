@@ -100,7 +100,7 @@ struct ContractCallComposite<'a> {
 
 ```
 
-### `num_bigint` Support
+### [num_bigint](https://docs.rs/num-bigint/0.2.6/num_bigint/) Support
 
 If you'd like support for `num_bigint` enable the `bigint` feature.
 

@@ -7,7 +7,7 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use solidity::{
+use solid::{
     derive::{
         Decode,
         Encode,

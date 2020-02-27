@@ -94,7 +94,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
             let mut index = 0usize;
 
             if #has_name {
-                let mut selector = solidity::Selector::new();
+                let mut selector = solid::Selector::new();
                 #(
                     selector = selector.push::<#ty2>();
                 )*

@@ -7,14 +7,19 @@ members = [
 ]
 
 [package]
-name = "solidity"
+name = "solid"
 version = "0.1.0"
 authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Solidity encoding/decoding library"
+homepage = "https://github.com/danielakhterov/solid"
+repository = "https://github.com/danielakhterov/solid"
+keywords = [ "solidity", "encoding", "decoding" ]
 
 [dependencies]
-solidity-derive = { path = "solidity-derive", optional = true }
-solidity-core = { path = "solidity-core", default-features = false }
+solidity-derive = { path = "solidity-derive", version = "0.1.0", optional = true }
+solidity-core = { path = "solidity-core", version = "0.1.0", default-features = false }
 
 [features]
 default = [ "serde", "derive" ]

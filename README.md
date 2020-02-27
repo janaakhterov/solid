@@ -103,7 +103,3 @@ struct ContractCallComposite<'a> {
 ### `num_bigint` Support
 
 If you'd like support for `num_bigint` enable the `bigint` feature.
-
-### `fixed` Support
-
-If you'd like support for `fixed` enable the `fixed` feature.

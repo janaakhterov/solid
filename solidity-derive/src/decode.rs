@@ -59,10 +59,10 @@ pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {
                     #(
                         #field: {
                             let value = if <#ty as Encode>::is_dynamic() {
-                                let offset = u64::decode(&buf[32 + index * 32..32 + (index + 1) * 32]) as usize;
+                                let offset = u64::decode(&buf[index * 32..(index + 1) * 32]) as usize;
                                 <#ty as Decode>::decode(&buf[offset..])
                             } else {
-                                <#ty as Decode>::decode(&buf[32 + index * 32..32 + (index + 1) * 32])
+                                <#ty as Decode>::decode(&buf[index * 32..(index + 1) * 32])
                             };
                             index += 1;
                             value

@@ -105,7 +105,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
             #(
                 let bytes = self.#field.encode();
                 if <#ty as Encode>::is_dynamic() {
-                    buf[index * 32..(index + 1) * 32].copy_from_slice(&(offset as u64).encode());
+                    buf[index * 32 + 24..(index + 1) * 32].copy_from_slice(&(offset as u64).to_be_bytes());
                     buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                     offset += bytes.len();
                 } else {
@@ -144,15 +144,8 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
         }
     };
 
-    // let header = if let Some(lifetimes) = &ast.lifetimes {
-    //     quote! { impl<#lifetimes> Encode for #ident }
-    // } else {
-    //     quote! { impl Encode for #ident }
-    // };
-
     quote! {
-
-    impl #impl_generics Encode for #ident #ty_generics #where_clause {
+        impl #impl_generics Encode for #ident #ty_generics #where_clause {
             #encode
 
             #required_len

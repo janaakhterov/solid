@@ -1,3 +1,4 @@
+use super::Solidity;
 use proc_macro2::{
     Span,
     TokenStream,
@@ -53,6 +54,15 @@ pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {
     quote! {
         impl #generics Decode<'solidity> for #ident #ty_generics #where_clause {
             fn decode(buf: &'solidity [u8]) -> Self {
+                // Solidity returns the function signature for "Error(string)" if a function throws an error.
+                // To get around this simply check if the buffer is a factor of 32 or not. This is valid since
+                // solidity standard encoding format enforces that all fields line up to a 32 byte boundry.
+                let buf = if buf.len() % 32 == 4 {
+                    &buf[4..]
+                } else {
+                    &buf
+                };
+
                 let mut index = 0;
 
                 Self {

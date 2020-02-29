@@ -1,38 +1,13 @@
+use super::Solidity;
 use proc_macro2::{
     Literal,
     TokenStream,
 };
 use syn::{
-    parse::{
-        Parse,
-        ParseStream,
-    },
     Data,
     DeriveInput,
     Fields,
-    Ident,
-    Result,
-    Token,
 };
-
-#[derive(Debug)]
-struct Solidity {
-    ident: Ident,
-    name: Option<Literal>,
-}
-
-impl Parse for Solidity {
-    fn parse(input: ParseStream) -> Result<Self> {
-        let ident: Ident = input.parse()?;
-        let name = if let Ok(_) = input.parse::<Token![=]>() {
-            Some(input.parse::<Literal>()?)
-        } else {
-            None
-        };
-
-        Ok(Self { ident, name })
-    }
-}
 
 pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let ident = &ast.ident;
@@ -41,7 +16,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
     let mut name = Literal::string(ident.to_string().as_str());
     for attr in &ast.attrs {
         if let Some(ident) = &attr.path.get_ident() {
-            if ident.to_string() == "solidity" {
+            if ident.to_string() == "solid" {
                 let attribute = attr.parse_args::<Solidity>().unwrap();
                 match attribute.ident.to_string().as_str() {
                     "constructor" => {

@@ -48,12 +48,12 @@ pub struct ContractCallSerde<'a> {
     // pub bytes: Bytes10,
 }
 
-// Use the `#[solidity(constructor)]` attribute to declare a struct as a constructor.
+// Use the `#[solid(constructor)]` attribute to declare a struct as a constructor.
 // This is important because constructors do not have the function name prefix,
 // unlike all other functions. Usually the struct name is used as the function
-// name. To rename the function use the `#[solidity(name = "<function_name>")]`
+// name. To rename the function use the `#[solid(name = "<function_name>")]`
 // where `<function_name>` is the name of your function.
-// ie. `#[solidity(name = "transfer")]`.
+// ie. `#[solid(name = "transfer")]`.
 #[derive(Encode)]
 struct ContractConstructorEncode<'a> {
     pub value: u128,
@@ -66,6 +66,7 @@ struct ContractConstructorEncode<'a> {
 // wrappers around `[u8; 32]`. The point of them is to support all
 // `int`/`uint` Solidity types.
 #[derive(Decode)]
+#[solid(error)]
 struct ContractCallResponse<'a> {
     int: Uint256,
     // Note: &'a [u8] is *not* the same as `Bytes<'a>`. The former is is `uint8[]` in solidity
@@ -103,7 +104,7 @@ struct ContractCallComposite<'a> {
 // Also, BigInt supports numbers larger than the max value a uint256 can store, so the value
 // will be truncated to 32 bytes before it's encoded.
 #[derive(Encode)]
-#[solidity(rename = "transfer")]
+#[solid(rename = "transfer")]
 struct ContractTransfer<'a> {
     amount: BigInt,
     to: &'a str,

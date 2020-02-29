@@ -1,4 +1,4 @@
-//! ### Basic usage of the crate without the "serde" nor "dervie" features would be using `Builder` and `Selector`.
+//! ### Basic usage of the crate without the "serde" nor "derive" features would be using `Builder` and `Selector`.
 //!
 //! ```rust
 //! let function = Builder::new()

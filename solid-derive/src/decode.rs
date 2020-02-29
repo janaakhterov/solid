@@ -1,4 +1,3 @@
-use super::Solidity;
 use proc_macro2::{
     Span,
     TokenStream,

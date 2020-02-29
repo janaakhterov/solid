@@ -14,3 +14,6 @@ quote = "1.0.2"
 
 [lib]
 proc-macro = true
+
+[dev-dependencies]
+solid-core = { path = "../solid-core" }

@@ -83,6 +83,7 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bytes::Bytes;
 
     #[test]
     fn type_test() {

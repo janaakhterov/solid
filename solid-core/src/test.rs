@@ -3,7 +3,7 @@ use crate::{
     address::Address,
     builder::Builder,
     bytes::Bytes,
-    bytesfix::Bytes4,
+    bytesfix::stable::Bytes4,
     function::Function,
 };
 #[cfg(test)]
@@ -13,16 +13,16 @@ use std::convert::TryFrom;
 #[rustfmt::skip]
 fn number_test() {
     let buf = Builder::new()
-        .add(0xffu8 as i8)
-        .add(0xffu8)
-        .add(0xffffu16 as i16)
-        .add(0xffffu16)
-        .add(0xffffffffu32 as i32)
-        .add(0xffffffffu32)
-        .add(0xffffffffffffffffu64 as i64)
-        .add(0xffffffffffffffffu64)
-        .add(0xffffffffffffffffffffffffffffffffu128 as i128)
-        .add(0xffffffffffffffffffffffffffffffffu128)
+        .push(0xffu8 as i8)
+        .push(0xffu8)
+        .push(0xffffu16 as i16)
+        .push(0xffffu16)
+        .push(0xffffffffu32 as i32)
+        .push(0xffffffffu32)
+        .push(0xffffffffffffffffu64 as i64)
+        .push(0xffffffffffffffffu64)
+        .push(0xffffffffffffffffffffffffffffffffu128 as i128)
+        .push(0xffffffffffffffffffffffffffffffffu128)
         .build();
     let first = hex::decode("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
     let second = hex::decode("00000000000000000000000000000000000000000000000000000000000000ff").unwrap();
@@ -50,7 +50,7 @@ fn number_test() {
 #[test]
 #[rustfmt::skip]
 fn byte_test() {
-    let buf = Builder::new().add(Bytes("random bytes".as_bytes())).build();
+    let buf = Builder::new().push(Bytes("random bytes".as_bytes())).build();
     let first_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let first_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000c").unwrap();
     let first_data = hex::decode("72616E646F6D206279746573000000000000000000000000000000000000000000").unwrap();
@@ -64,7 +64,7 @@ fn byte_test() {
 #[test]
 #[rustfmt::skip]
 fn string_test() {
-    let buf = Builder::new().add("random bytes".to_string()).build();
+    let buf = Builder::new().push("random bytes".to_string()).build();
     let first_offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let first_len = hex::decode("000000000000000000000000000000000000000000000000000000000000000c").unwrap();
     let first_data = hex::decode("72616e646f6d206279746573000000000000000000000000000000000000000000").unwrap();
@@ -78,7 +78,7 @@ fn string_test() {
 #[test]
 #[rustfmt::skip]
 fn byte_n_test() {
-    let buf = Builder::new().add(Bytes4([0xff; 4])).build();
+    let buf = Builder::new().push(Bytes4([0xff; 4])).build();
     let first = hex::decode("ffffffff00000000000000000000000000000000000000000000000000000000").unwrap();
 
     assert_eq!(32, buf.len());
@@ -89,16 +89,16 @@ fn byte_n_test() {
 #[rustfmt::skip]
 fn array_number_test() {
     let buf = Builder::new()
-        .add([0xffu8 as i8; 2].to_vec())
-        .add([0xffu8; 2].to_vec())
-        .add([0xffffu16 as i16; 2].to_vec())
-        .add([0xffffu16; 2].to_vec())
-        .add([0xffffffffu32 as i32; 2].to_vec())
-        .add([0xffffffffu32; 2].to_vec())
-        .add([0xffffffffffffffffu64 as i64; 2].to_vec())
-        .add([0xffffffffffffffffu64; 2].to_vec())
-        .add([0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
-        .add([0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
+        .push([0xffu8 as i8; 2].to_vec())
+        .push([0xffu8; 2].to_vec())
+        .push([0xffffu16 as i16; 2].to_vec())
+        .push([0xffffu16; 2].to_vec())
+        .push([0xffffffffu32 as i32; 2].to_vec())
+        .push([0xffffffffu32; 2].to_vec())
+        .push([0xffffffffffffffffu64 as i64; 2].to_vec())
+        .push([0xffffffffffffffffu64; 2].to_vec())
+        .push([0xffffffffffffffffffffffffffffffffu128 as i128; 2].to_vec())
+        .push([0xffffffffffffffffffffffffffffffffu128; 2].to_vec())
         .build();
 
     let i8_offset   = hex::decode("0000000000000000000000000000000000000000000000000000000000000140").unwrap();
@@ -189,8 +189,8 @@ fn array_number_test() {
 #[rustfmt::skip]
 fn bytes_array_test() {
     let buf = Builder::new()
-        .add(vec![Bytes(&[0xaau8; 16]), Bytes(&[0xffu8; 16])])
-        .add(vec!["random string".to_string(), "what about another one".to_string()])
+        .push(vec![Bytes(&[0xaau8; 16]), Bytes(&[0xffu8; 16])])
+        .push(vec!["random string".to_string(), "what about another one".to_string()])
         .build();
 
     let bytes_array_offset    = hex::decode("0000000000000000000000000000000000000000000000000000000000000040").unwrap();
@@ -231,7 +231,7 @@ fn bytes_array_test() {
 #[test]
 #[rustfmt::skip]
 fn address_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add(Address::try_from(&[0xffu8; 20][..])?).build();
+    let buf = Builder::new().push(Address::try_from(&[0xffu8; 20][..])?).build();
 
     let address = hex::decode("000000000000000000000000ffffffffffffffffffffffffffffffffffffffff").unwrap();
 
@@ -243,7 +243,7 @@ fn address_test() -> Result<(), anyhow::Error> {
 #[test]
 #[rustfmt::skip]
 fn function_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add(Function::try_from(&[0xffu8; 24][..])?).build();
+    let buf = Builder::new().push(Function::try_from(&[0xffu8; 24][..])?).build();
 
     let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
 
@@ -255,7 +255,7 @@ fn function_test() -> Result<(), anyhow::Error> {
 #[test]
 #[rustfmt::skip]
 fn hex_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add(Function::try_from("0xffffffffffffffffffffffffffffffffffffffffffffffff")?).build();
+    let buf = Builder::new().push(Function::try_from("0xffffffffffffffffffffffffffffffffffffffffffffffff")?).build();
 
     let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
 
@@ -267,7 +267,7 @@ fn hex_test() -> Result<(), anyhow::Error> {
 #[test]
 #[rustfmt::skip]
 fn tuple_test() -> Result<(), anyhow::Error> {
-    let buf = Builder::new().add((0xffu8, 0xaabbu16)).build();
+    let buf = Builder::new().push((0xffu8, 0xaabbu16)).build();
 
     let offset = hex::decode("0000000000000000000000000000000000000000000000000000000000000020").unwrap();
     let tuple1 = hex::decode("00000000000000000000000000000000000000000000000000000000000000ff").unwrap();

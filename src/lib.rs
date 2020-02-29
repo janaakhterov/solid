@@ -1,6 +1,9 @@
 //! ### Basic usage of the crate without the "serde" nor "derive" features would be using `Builder` and `Selector`.
 //!
 //! ```rust
+//! use solid::Bytes10;
+//! use solid::Builder;
+//!
 //! let function = Builder::new()
 //!     .name("transfer")
 //!     .push("daniel")
@@ -16,6 +19,14 @@
 //! to derive the function signature.
 //!
 //! ```rust
+//! use soild::{
+//!     Address,
+//!     Bytes,
+//!     Encode,
+//!     Decode,
+//!     Uint256,
+//! };
+//!
 //! #[derive(Encode)]
 //! #[solid(rename = "random_function")]
 //! struct ContractCallComposite<'a> {
@@ -36,8 +47,10 @@
 //! ### Usage with the "serde" feature would look like.
 //!
 //! ```rust
+//! use solid::Bytes;
+//! use serde::{Serialize, Deserialize};
+//!
 //! #[derive(Serialize)]
-//! #[solid(rename = "random_function")]
 //! struct ContractCallComposite<'a> {
 //!     to: (&'a str, u128),
 //!     memos: &'a [&'a str],
@@ -56,7 +69,38 @@
 //! }
 //! ```
 //!
+//! ### Supported attribute key/value pairs for `Encode`:
+//!
+//! "rename": must have a value associated with it indicating the function name.
+//! If this is key is not used, then the struct identifier is used as the function name.
+//!
+//! ```rust
+//! use solid::Bytes;
+//! use solid::Encode;
+//!
+//! #[derive(Encode)]
+//! #[solid(rename = "random_function")]
+//! struct RandomFunction<'a> {
+//!     memo: String,
+//!     data: Bytes<'a>
+//! }
+//! ```
+//!
+//! "constructor": This indicates the function that is being called is a constructor and hence
+//! should not have the function signature encoded in the buffer.
+//! Note: The function signature in solidity is 4 bytes hash in the beginning of the buffer.
+//!
+//! ```rust
+//! use solid::Encode;
+//!
+//! #[derive(Encode)]
+//! #[solid(constructor)]
+//! struct Contract {
+//!     creator: String,
+//! }
+//! ```
 #[cfg(feature = "derive")]
+#[doc(inline)]
 pub use solid_derive as derive;
 
 pub use solid_core::{

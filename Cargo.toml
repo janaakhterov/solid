@@ -3,6 +3,7 @@ members = [
     ".",
     "solid-core",
     "solid-derive",
+    "cargo-solid",
     "examples/contract-call"
 ]
 

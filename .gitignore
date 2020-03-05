@@ -10,3 +10,5 @@ solid-core/Cargo.lock
 .#*
 
 TAGS
+
+cargo-solid/stateful*

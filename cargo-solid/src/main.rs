@@ -43,7 +43,7 @@ struct SolidityField {
     name: Option<String>,
     outputs: Option<Vec<SolidityType>>,
     payable: Option<bool>,
-    stateMutability: String,
+    state_mutability: String,
     r#type: String,
 }
 
@@ -114,7 +114,7 @@ fn main() -> anyhow::Result<()> {
 
         let mut file = fs::File::create(Path::new(filename))?;
 
-        file.write(contract.as_bytes());
+        file.write(contract.as_bytes())?;
     }
 
     Ok(())

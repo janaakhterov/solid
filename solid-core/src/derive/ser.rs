@@ -27,7 +27,7 @@ struct Field {
 }
 
 impl Serializer {
-    fn encode<T: Encode + IntoType>(&mut self, value: T) -> Result<(), Error> {
+    fn encode<T: Encode>(&mut self, value: T) -> Result<(), Error> {
         if let Some(stack) = self.stack.front_mut() {
             let value = value.encode();
             if T::is_dynamic() {

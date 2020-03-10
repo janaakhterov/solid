@@ -21,11 +21,14 @@ keywords = [ "solidity", "encoding", "decoding" ]
 [dependencies]
 solid-derive = { path = "solid-derive", version = "0.1.0", optional = true }
 solid-core = { path = "solid-core", version = "0.1.0", default-features = false }
+serde = "1.0.104"
+
+[dev-dependencies]
 
 [features]
-default = [ "serde", "derive" ]
+default = [ "deser", "derive" ]
 
-serde = [ "solid-core/derive" ]
+deser = [ "solid-core/derive" ]
 
 derive = [ "solid-derive" ]
 

@@ -1,9 +1,11 @@
-//! ### Basic usage of the crate without the "serde" nor "derive" features would be using `Builder` and `Selector`.
+//! ### Basic usage of the crate without the "deser" nor "derive" features would be using `Builder` and `Selector`.
 //!
 //! ```rust
-//! use solid::Bytes10;
-//! use solid::Builder;
-//!
+//! # use solid::{
+//! #     Bytes10,
+//! #     Builder,
+//! # };
+//! #
 //! let function = Builder::new()
 //!     .name("transfer")
 //!     .push("daniel")
@@ -19,14 +21,18 @@
 //! to derive the function signature.
 //!
 //! ```rust
-//! use soild::{
-//!     Address,
-//!     Bytes,
-//!     Encode,
-//!     Decode,
-//!     Uint256,
-//! };
-//!
+//! # use solid::{
+//! #     Address,
+//! #     Bytes,
+//! #     derive::{
+//! #         Encode,
+//! #         Decode,
+//! #     },
+//! #     Encode,
+//! #     Decode,
+//! #     Uint256,
+//! # };
+//! #
 //! #[derive(Encode)]
 //! #[solid(rename = "random_function")]
 //! struct ContractCallComposite<'a> {
@@ -44,12 +50,12 @@
 //! }
 //! ```
 //!
-//! ### Usage with the "serde" feature would look like.
+//! ### Usage with the "deser" feature would look like.
 //!
 //! ```rust
-//! use solid::Bytes;
-//! use serde::{Serialize, Deserialize};
-//!
+//! # use solid::Bytes;
+//! # use serde::{Serialize, Deserialize};
+//! #
 //! #[derive(Serialize)]
 //! struct ContractCallComposite<'a> {
 //!     to: (&'a str, u128),
@@ -62,7 +68,16 @@
 //!     // Uint256 is not supported.
 //!     // int: Uint256,
 //!     int: u128,
+//!
+//!     #[serde(borrow)]
 //!     bytes: Bytes<'a>,
+//!     // You can also do the following because
+//!     // serde treats `&'a [u8]` as bytes
+//!     // bytes: &'a [u8],
+//!     //
+//!     // However, note that if you want to get `uint8[]` using serde you'll need to use a vec
+//!     // uint8array: Ve<u8>,
+//!
 //!     memo: &'a str,
 //!     // Address is not supported.
 //!     // address: Address,
@@ -75,9 +90,10 @@
 //! If this is key is not used, then the struct identifier is used as the function name.
 //!
 //! ```rust
-//! use solid::Bytes;
-//! use solid::Encode;
-//!
+//! # use solid::Bytes;
+//! # use solid::derive::Encode;
+//! # use solid::Encode;
+//! #
 //! #[derive(Encode)]
 //! #[solid(rename = "random_function")]
 //! struct RandomFunction<'a> {
@@ -91,8 +107,9 @@
 //! Note: The function signature in solidity is 4 bytes hash in the beginning of the buffer.
 //!
 //! ```rust
-//! use solid::Encode;
-//!
+//! # use solid::derive::Encode;
+//! # use solid::Encode;
+//! #
 //! #[derive(Encode)]
 //! #[solid(constructor)]
 //! struct Contract {
@@ -100,7 +117,6 @@
 //! }
 //! ```
 #[cfg(feature = "derive")]
-#[doc(inline)]
 pub use solid_derive as derive;
 
 pub use solid_core::{
@@ -125,7 +141,7 @@ pub use solid_core::bytesfix::nightly::*;
 #[cfg(feature = "nightly")]
 pub use solid_core::int::nightly::*;
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "deser")]
 pub use solid_core::derive::to_bytes;
 
 #[cfg(feature = "nightly")]

@@ -124,67 +124,69 @@ impl<'a> Decode<'a> for u128 {
     }
 }
 
-pub struct Int24(pub [u8; 32]);
-pub struct Int40(pub [u8; 32]);
-pub struct Int48(pub [u8; 32]);
-pub struct Int56(pub [u8; 32]);
-pub struct Int72(pub [u8; 32]);
-pub struct Int80(pub [u8; 32]);
-pub struct Int88(pub [u8; 32]);
-pub struct Int96(pub [u8; 32]);
-pub struct Int104(pub [u8; 32]);
-pub struct Int112(pub [u8; 32]);
-pub struct Int120(pub [u8; 32]);
-pub struct Int136(pub [u8; 32]);
-pub struct Int144(pub [u8; 32]);
-pub struct Int152(pub [u8; 32]);
-pub struct Int160(pub [u8; 32]);
-pub struct Int168(pub [u8; 32]);
-pub struct Int176(pub [u8; 32]);
-pub struct Int184(pub [u8; 32]);
-pub struct Int192(pub [u8; 32]);
-pub struct Int200(pub [u8; 32]);
-pub struct Int208(pub [u8; 32]);
-pub struct Int216(pub [u8; 32]);
-pub struct Int224(pub [u8; 32]);
-pub struct Int232(pub [u8; 32]);
-pub struct Int240(pub [u8; 32]);
-pub struct Int248(pub [u8; 32]);
+pub struct Int24(pub [u8; 3]);
+pub struct Int40(pub [u8; 5]);
+pub struct Int48(pub [u8; 6]);
+pub struct Int56(pub [u8; 7]);
+pub struct Int72(pub [u8; 9]);
+pub struct Int80(pub [u8; 10]);
+pub struct Int88(pub [u8; 11]);
+pub struct Int96(pub [u8; 12]);
+pub struct Int104(pub [u8; 13]);
+pub struct Int112(pub [u8; 14]);
+pub struct Int120(pub [u8; 15]);
+pub struct Int136(pub [u8; 17]);
+pub struct Int144(pub [u8; 18]);
+pub struct Int152(pub [u8; 19]);
+pub struct Int160(pub [u8; 20]);
+pub struct Int168(pub [u8; 21]);
+pub struct Int176(pub [u8; 22]);
+pub struct Int184(pub [u8; 23]);
+pub struct Int192(pub [u8; 24]);
+pub struct Int200(pub [u8; 25]);
+pub struct Int208(pub [u8; 26]);
+pub struct Int216(pub [u8; 27]);
+pub struct Int224(pub [u8; 28]);
+pub struct Int232(pub [u8; 29]);
+pub struct Int240(pub [u8; 30]);
+pub struct Int248(pub [u8; 31]);
 pub struct Int256(pub [u8; 32]);
 
-pub struct Uint24(pub [u8; 32]);
-pub struct Uint40(pub [u8; 32]);
-pub struct Uint48(pub [u8; 32]);
-pub struct Uint56(pub [u8; 32]);
-pub struct Uint72(pub [u8; 32]);
-pub struct Uint80(pub [u8; 32]);
-pub struct Uint88(pub [u8; 32]);
-pub struct Uint96(pub [u8; 32]);
-pub struct Uint104(pub [u8; 32]);
-pub struct Uint112(pub [u8; 32]);
-pub struct Uint120(pub [u8; 32]);
-pub struct Uint136(pub [u8; 32]);
-pub struct Uint144(pub [u8; 32]);
-pub struct Uint152(pub [u8; 32]);
-pub struct Uint160(pub [u8; 32]);
-pub struct Uint168(pub [u8; 32]);
-pub struct Uint176(pub [u8; 32]);
-pub struct Uint184(pub [u8; 32]);
-pub struct Uint192(pub [u8; 32]);
-pub struct Uint200(pub [u8; 32]);
-pub struct Uint208(pub [u8; 32]);
-pub struct Uint216(pub [u8; 32]);
-pub struct Uint224(pub [u8; 32]);
-pub struct Uint232(pub [u8; 32]);
-pub struct Uint240(pub [u8; 32]);
-pub struct Uint248(pub [u8; 32]);
+pub struct Uint24(pub [u8; 3]);
+pub struct Uint40(pub [u8; 5]);
+pub struct Uint48(pub [u8; 6]);
+pub struct Uint56(pub [u8; 7]);
+pub struct Uint72(pub [u8; 9]);
+pub struct Uint80(pub [u8; 10]);
+pub struct Uint88(pub [u8; 11]);
+pub struct Uint96(pub [u8; 12]);
+pub struct Uint104(pub [u8; 13]);
+pub struct Uint112(pub [u8; 14]);
+pub struct Uint120(pub [u8; 15]);
+pub struct Uint136(pub [u8; 17]);
+pub struct Uint144(pub [u8; 18]);
+pub struct Uint152(pub [u8; 19]);
+pub struct Uint160(pub [u8; 20]);
+pub struct Uint168(pub [u8; 21]);
+pub struct Uint176(pub [u8; 22]);
+pub struct Uint184(pub [u8; 23]);
+pub struct Uint192(pub [u8; 24]);
+pub struct Uint200(pub [u8; 25]);
+pub struct Uint208(pub [u8; 26]);
+pub struct Uint216(pub [u8; 27]);
+pub struct Uint224(pub [u8; 28]);
+pub struct Uint232(pub [u8; 29]);
+pub struct Uint240(pub [u8; 30]);
+pub struct Uint248(pub [u8; 31]);
 pub struct Uint256(pub [u8; 32]);
 
 macro_rules! impl_encode_int {
     ($ty: ident, $expr: expr) => {
         impl Encode for $ty {
             fn encode(&self) -> Vec<u8> {
-                self.0.to_vec()
+                let mut value = vec![0u8; 32];
+                value[32 - self.0.len()..32].copy_from_slice(&self.0);
+                value
             }
 
             fn required_len(&self) -> u64 {

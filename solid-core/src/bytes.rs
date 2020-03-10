@@ -49,7 +49,7 @@ impl<'a> serde::ser::Serialize for Bytes<'a> {
 }
 
 #[cfg(feature = "derive")]
-impl<'de> serde::de::Deserialize<'de> for Bytes<'de> {
+impl<'a, 'de: 'a> serde::de::Deserialize<'de> for Bytes<'a> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::de::Deserializer<'de>,

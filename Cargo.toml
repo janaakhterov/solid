@@ -4,7 +4,8 @@ members = [
     "solid-core",
     "solid-derive",
     "cargo-solid",
-    "examples/contract-call"
+    "examples/contract-call",
+    "examples/cargo-solid-example"
 ]
 
 [package]

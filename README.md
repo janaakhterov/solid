@@ -130,3 +130,24 @@ solid = { version = "0.1.0", default-features = false, features = [ "derive", "s
  - derive: Add support for the `Encode` and `Decode` derive macros. (Recommended)
  - serde: Add support for `serde`s `Serialize` and `Deserialize` derive macros, and `to_bytes` function.
  - bigint: Add suport for `num_bigint` crate.
+
+### cargo-solid Subcommand
+
+cargo-solid is a cargo subcommand that allows you to generate a rust definition
+of a solidity contract using the solidity abi output.
+
+The following command generates the solidity abi for a contract.
+``` bash
+solc --combined-json abi solidity_contract.sol > solidity_contract.json
+```
+
+Then run the following command to generate the rust definition.
+``` bash
+cargo-solid solidity_contract.json
+```
+
+This the output file will the be same name as the input file, and will be
+located in `<the-current-directory>/src`. You can easily move the file if you'd
+like, but either way you'll need to add `mod solidity_contract;` to your
+`lib.rs` or `main.rs` files to use the generated code. If an example usage of
+the `cargo-solid` command is located in the `examples/cargo-solid-example` directory.

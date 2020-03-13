@@ -15,12 +15,15 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "cargo-solid",
+    bin_name = "cargo",
     about = "Solidity contract to Rust struct generator."
 )]
-struct Opt {
-    #[structopt(parse(from_os_str))]
-    input: PathBuf,
+enum Opt {
+    #[structopt(name = "solid")]
+    Solid {
+        #[structopt(parse(from_os_str))]
+        input: PathBuf,
+    },
 }
 
 #[derive(Debug, Deserialize)]
@@ -67,9 +70,11 @@ mod to_rust;
 use to_rust::ToRust;
 
 fn main() -> anyhow::Result<()> {
-    let opt = Opt::from_args();
+    let input = match Opt::from_args() {
+        Opt::Solid { input } => input,
+    };
 
-    let contents = fs::read_to_string(&opt.input)?;
+    let contents = fs::read_to_string(&input)?;
 
     let abi: SolidityAbi = serde_json::from_str(&contents)?;
 

@@ -136,6 +136,12 @@ solid = { version = "0.1.0", default-features = false, features = [ "derive", "s
 cargo-solid is a cargo subcommand that allows you to generate a rust definition
 of a solidity contract using the solidity abi output.
 
+#### Subcommand Install
+
+``` bash
+cargo install cargo-solid
+```
+
 The following command generates the solidity abi for a contract.
 ``` bash
 solc --combined-json abi solidity_contract.sol > solidity_contract.json
@@ -143,7 +149,7 @@ solc --combined-json abi solidity_contract.sol > solidity_contract.json
 
 Then run the following command to generate the rust definition.
 ``` bash
-cargo-solid solidity_contract.json
+cargo solid solidity_contract.json
 ```
 
 This the output file will the be same name as the input file, and will be

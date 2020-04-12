@@ -4,6 +4,7 @@ use crate::{
     into_type::IntoType,
 };
 
+/// Solidity Type `bytes`
 pub struct Bytes<'a>(pub &'a [u8]);
 
 impl<'a> Encode for Bytes<'a> {

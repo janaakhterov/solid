@@ -4,6 +4,10 @@ use crate::{
     selector::Selector,
 };
 
+/// Function call builder
+///
+/// Builds a function signature along with encode parameters to can be used to
+/// call a Solidity function
 #[derive(Default)]
 pub struct Builder<'a> {
     name: Option<&'a str>,
@@ -16,17 +20,26 @@ impl<'a> Builder<'a> {
         Builder::default()
     }
 
+    /// Set the name of the function
     pub fn name(mut self, name: &'a str) -> Self {
         self.name = Some(name);
         self
     }
 
+    /// Push an argument to the functions argument list
+    ///
+    /// Each argument is used to determine the function signature.
     pub fn push<F: Encode + IntoType>(mut self, value: F) -> Self {
         self.selector = self.selector.push::<F>();
         self.params.push((F::is_dynamic(), value.encode()));
         self
     }
 
+    /// Build the function call
+    ///
+    /// If a name was set the a function selector will be used. Otherwise only the
+    /// parameters will be encoded. A function name must not be set if a Solidity
+    /// contract constructor is to be called.
     pub fn build(self) -> Vec<u8> {
         let name_offset = if let Some(_) = self.name { 4 } else { 0 };
 

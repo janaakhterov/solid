@@ -76,7 +76,7 @@
 //!     // bytes: &'a [u8],
 //!     //
 //!     // However, note that if you want to get `uint8[]` using serde you'll need to use a vec
-//!     // uint8array: Ve<u8>,
+//!     // uint8array: Vec<u8>,
 //!
 //!     memo: &'a str,
 //!     // Address is not supported.
@@ -123,7 +123,7 @@ pub use solid_core::{
     address::Address,
     builder::Builder,
     bytes::Bytes,
-    bytesfix::stable::*,
+    bytesfix,
     decode::Decode,
     encode::Encode,
     error::{
@@ -131,24 +131,12 @@ pub use solid_core::{
         Result,
     },
     function::Function,
-    int::stable::*,
+    int,
     selector::Selector,
 };
 
-#[cfg(feature = "nightly")]
-pub use solid_core::bytesfix::nightly::*;
-
-#[cfg(feature = "nightly")]
-pub use solid_core::int::nightly::*;
-
 #[cfg(feature = "deser")]
-pub use solid_core::derive::to_bytes;
-
-#[cfg(feature = "nightly")]
-pub use solid_core::bytesfix::nightly::*;
-
-#[cfg(feature = "nightly")]
-pub use solid_core::int::nightly::*;
-
-// #[cfg(feature = "fixed")]
-// pub use solid_core::fixed::*;
+pub use solid_core::derive::{
+    from_bytes,
+    to_bytes,
+};

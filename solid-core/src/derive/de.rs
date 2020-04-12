@@ -26,11 +26,7 @@ impl<'de> Deserializer<'de> {
     }
 }
 
-// By convention, the public API of a Serde deserializer is one or more
-// `from_xyz` methods such as `from_str`, `from_bytes`, or `from_reader`
-// depending on what Rust types the deserializer is able to consume as input.
-//
-// This basic deserializer supports only `from_str`.
+/// Function to call to decode a Solidity response into a struct that implements `serde::Deserialize`
 pub fn from_bytes<'a, T>(buf: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,

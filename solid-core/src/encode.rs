@@ -1,6 +1,13 @@
+/// Declares a type to be encodable as a Solidity type
 pub trait Encode {
     fn encode(&self) -> Vec<u8>;
+
+    /// The number of bytes required to encode the current type.
+    ///
+    /// This can be a static or dynamic value based on the type. The value should be 32 bytes
+    /// aligned, and does not include the 32 bytes required for the offset.
     fn required_len(&self) -> u64;
+
     fn is_dynamic() -> bool;
 }
 

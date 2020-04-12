@@ -128,8 +128,9 @@ solid = { version = "0.1.0", default-features = false, features = [ "derive", "s
 
 #### Features
  - derive: Add support for the `Encode` and `Decode` derive macros. (Recommended)
- - serde: Add support for `serde`s `Serialize` and `Deserialize` derive macros, and `to_bytes` function.
+ - derse: Add support for `serde`s `Serialize` and `Deserialize` derive macros, and `to_bytes` function.
  - bigint: Add suport for `num_bigint` crate.
+ - nightly: Experimental const generic support.
 
 ### cargo-solid Subcommand
 

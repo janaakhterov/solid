@@ -1,5 +1,6 @@
 use crate::encode::Encode;
 
+/// Declares a type to be decodable from as Solidity response buffer
 pub trait Decode<'a>: Sized {
     fn decode(buf: &'a [u8]) -> Self;
 }

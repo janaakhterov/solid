@@ -9,6 +9,7 @@ use std::convert::{
     TryInto,
 };
 
+/// Simple wrapper for the Solidity type `function`
 pub struct Function(pub [u8; 32]);
 
 impl TryFrom<&str> for Function {

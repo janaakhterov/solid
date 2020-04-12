@@ -8,8 +8,10 @@ use std::{
     string::FromUtf8Error,
 };
 
+/// Simple wrapper around `std::result::Result`
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+/// Crate level error type
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     Message(String),

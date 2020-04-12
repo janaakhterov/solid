@@ -8,10 +8,14 @@ use std::{
     convert::TryFrom,
 };
 
+/// A simpler structure to represent all Solidity `bytes<N>` types using const generics
+/// ```rust
+/// let bytes10 = Bytes<10>(&[0u8; 10]);
+/// ```
 pub struct BytesFix<'a, const N: usize>(pub &'a [u8; N]);
 
 impl<'a, const N: usize> Encode for BytesFix<'a, N> {
-    fn encode(self) -> Vec<u8> {
+    fn encode(&self) -> Vec<u8> {
         let mut buf = vec![0u8; 32];
         buf[0..N].copy_from_slice(&self.0[..]);
         buf

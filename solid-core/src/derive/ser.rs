@@ -49,6 +49,7 @@ impl Serializer {
     }
 }
 
+/// Function to call to encode a struct that implements `serde::Serialize`
 pub fn to_bytes<T: ?Sized + Serialize>(value: &T) -> Result<Vec<u8>> {
     let mut serializer = Serializer::default();
     value.serialize(&mut serializer)?;

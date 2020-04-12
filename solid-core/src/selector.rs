@@ -4,6 +4,7 @@ use sha3::{
     Keccak256,
 };
 
+/// Function signature builder
 #[derive(Default)]
 pub struct Selector {
     params: Vec<String>,

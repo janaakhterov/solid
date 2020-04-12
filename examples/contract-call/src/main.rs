@@ -8,19 +8,19 @@ use serde::{
     Serialize,
 };
 use solid::{
+    bytesfix::Bytes10,
     derive::{
         Decode,
         Encode,
     },
+    int::Uint256,
     to_bytes,
     Address,
     Builder,
     Bytes,
-    Bytes10,
     Decode,
     Encode,
     Result,
-    Uint256,
 };
 
 // Basic usage using the built in `Encode` derive macro.

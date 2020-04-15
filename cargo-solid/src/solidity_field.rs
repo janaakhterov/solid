@@ -52,6 +52,7 @@ impl SolidityField {
             "constructor" | "function" => format!(
                 "
     #[rustfmt::skip]
+    #[allow(dead_code)]
     pub fn {}({}) -> Vec<u8> {{
         solid::Builder::new(){}{}
             .build()
@@ -101,6 +102,7 @@ impl SolidityField {
             match self.r#type.as_str() {
                 "function" => Some(format!(
                     "\
+#[derive(Encode)]
 pub struct {}{} {{
 {}
 }}

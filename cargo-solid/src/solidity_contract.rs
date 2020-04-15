@@ -31,12 +31,17 @@ impl {contract} {{
     }
 
     pub fn types(&self) -> String {
-        self.fields
-            .iter()
-            .map(|field| field.get_output_type())
-            .filter(Option::is_some)
-            .map(Option::unwrap)
-            .collect::<Vec<_>>()
-            .join("\n")
+        format!(
+            "\
+#[allow(unused_imports)]
+use solid::{{derive::Encode, Encode}};\n\n{}",
+            self.fields
+                .iter()
+                .map(|field| field.get_output_type())
+                .filter(Option::is_some)
+                .map(Option::unwrap)
+                .collect::<Vec<_>>()
+                .join("\n")
+        )
     }
 }

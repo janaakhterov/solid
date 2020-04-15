@@ -12,8 +12,6 @@
 
 ### Removed
 
-  * `stateful.rs` file from `cargo-solid`
-
   * `Bytes<N>` from top level documentation.
 
   * `Int<N>` from top level documentation.

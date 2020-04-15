@@ -1,40 +1,63 @@
-
+pub struct GetDetailsNamedOutput<'a> {
+	pub message_: &'a str,
+	pub random_bytes_: solid::Bytes<'a>,
+	pub random_bytes10_: solid::bytesfix::Bytes10,
+}
+                        
 pub struct StatefulContract;
 
 impl StatefulContract {
 
-    pub fn new(message_: &str) -> Vec<u8> {
+    #[rustfmt::skip]
+    pub fn new(message_: &str, random_bytes_: solid::Bytes<'_>, random_bytes10_: solid::bytesfix::Bytes10) -> Vec<u8> {
         solid::Builder::new()
-            .push(message_)
-            
+			.push(message_)
+			.push(random_bytes_)
+			.push(random_bytes10_)
             .build()
     }
 
-    pub fn getMessage() -> Vec<u8> {
+    #[rustfmt::skip]
+    pub fn get_details() -> Vec<u8> {
         solid::Builder::new()
-            
-            .name("getMessage")
+			.name("getDetails")
             .build()
     }
 
+    #[rustfmt::skip]
+    pub fn get_details_named() -> Vec<u8> {
+        solid::Builder::new()
+			.name("getDetailsNamed")
+            .build()
+    }
+
+    #[rustfmt::skip]
+    pub fn get_message() -> Vec<u8> {
+        solid::Builder::new()
+			.name("getMessage")
+            .build()
+    }
+
+    #[rustfmt::skip]
     pub fn kill() -> Vec<u8> {
         solid::Builder::new()
-            
-            .name("kill")
+			.name("kill")
             .build()
     }
 
-    pub fn printMessage(messages_: Vec<&str>) -> Vec<u8> {
+    #[rustfmt::skip]
+    pub fn print_message(messages_: Vec<&str>) -> Vec<u8> {
         solid::Builder::new()
-            .push(messages_)
-            .name("printMessage")
+			.push(messages_)
+			.name("printMessage")
             .build()
     }
 
-    pub fn setMessage(message_: &str) -> Vec<u8> {
+    #[rustfmt::skip]
+    pub fn set_message(message_: &str) -> Vec<u8> {
         solid::Builder::new()
-            .push(message_)
-            .name("setMessage")
+			.push(message_)
+			.name("setMessage")
             .build()
     }
 }

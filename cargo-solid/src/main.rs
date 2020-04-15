@@ -27,47 +27,22 @@ enum Opt {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
 struct SolidityAbi {
     contracts: Map<String, Value>,
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
 struct SolidityAbiContract {
     abi: String,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct SolidityField {
-    constant: Option<bool>,
-    inputs: Option<Vec<SolidityType>>,
-    name: Option<String>,
-    outputs: Option<Vec<SolidityType>>,
-    payable: Option<bool>,
-    state_mutability: String,
-    r#type: String,
-}
+pub mod solidity_contract;
+pub mod solidity_field;
+pub mod solidity_type;
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct SolidityType {
-    internal_type: Option<String>,
-    name: String,
-    r#type: String,
-}
-
-#[derive(Debug)]
-struct SolidityContract {
-    filename: String,
-    contract: String,
-    fields: Vec<SolidityField>,
-}
-
-mod to_rust;
-
-use to_rust::ToRust;
+pub use solidity_contract::SolidityContract;
+pub use solidity_field::SolidityField;
+pub use solidity_type::SolidityType;
 
 fn main() -> anyhow::Result<()> {
     let input = match Opt::from_args() {
@@ -115,7 +90,7 @@ fn main() -> anyhow::Result<()> {
     // Create all the contract files. One file per contract.
     for contract in contracts.into_iter() {
         let filename = &contract.filename;
-        let contract = contract.to_rust();
+        let contract = format!("{}{}", contract.types(), contract.functions());
 
         let mut file = fs::File::create(Path::new(filename))?;
 

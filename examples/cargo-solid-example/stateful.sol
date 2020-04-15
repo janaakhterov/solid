@@ -9,10 +9,15 @@ contract StatefulContract {
     // the message we're storing
     string message;
 
-    constructor(string memory message_) public {
+    bytes random_bytes;
+    bytes10 random_bytes10;
+
+    constructor(string memory message_, bytes memory random_bytes_, bytes10 random_bytes10_) public {
         // set the owner of the contract for `kill()`
         owner = msg.sender;
         message = message_;
+        random_bytes = random_bytes_;
+        random_bytes10 = random_bytes10_;
     }
 
     function setMessage(string memory message_) public {
@@ -25,9 +30,16 @@ contract StatefulContract {
         // Do nothign
     }
 
-    // return a string
     function getMessage() public view returns (string memory) {
         return message;
+    }
+
+    function getDetailsNamed() public view returns (string memory message_, bytes memory random_bytes_, bytes10 random_bytes10_) {
+        return (message, random_bytes, random_bytes10);
+    }
+
+    function getDetails() public view returns (string memory, bytes memory, bytes10) {
+        return (message, random_bytes, random_bytes10);
     }
 
     // return a string

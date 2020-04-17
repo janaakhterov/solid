@@ -119,10 +119,10 @@ struct ContractTransfer<'a> {
 # Cargo.toml
 
 # Default features which includes `derive`, and `serde`
-solid = "0.1.0"
+solid = "0.1.3"
 
 # num_bigint support
-solid = { version = "0.1.0", default-features = false, features = [ "derive", "serde", "bigint" ] }
+solid = { version = "0.1.3", default-features = false, features = [ "derive", "serde", "bigint" ] }
 ```
 
 #### Features

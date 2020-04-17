@@ -5,6 +5,6 @@ edition = "2018"
 workspace = "../.."
 
 [dependencies]
-solid = { path = "../..", features = [ "derive", "bigint" ]}
+solid = { path = "../..", features = [ "derive", "bigint", "nightly" ]}
 serde = "1.0.104"
 num-bigint = "0.2.6"

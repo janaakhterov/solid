@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 0.1.4
+
+### Added
+
+  * Create generated files in a given directory other than `./src`; generate the `mod.rs` file.
+
+  * Generate code for multiple contracts at once
+
+  * Nightly option to use nightly feature when generating code; 
+    use `BytesFix<N>` and `Int<N, M>` instead of the stable counterparts
+
+### Fixed
+
+  * Use spaces instead of tabs in generated code so formatting always looks right
+
 ## 0.1.3
 
 ### Added

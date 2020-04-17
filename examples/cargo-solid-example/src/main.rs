@@ -1,3 +1,4 @@
+mod generated;
 mod stateful;
 
 fn main() {

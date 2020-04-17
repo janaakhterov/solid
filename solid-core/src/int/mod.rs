@@ -6,3 +6,9 @@ pub mod stable;
 pub mod bigint;
 
 pub use stable::*;
+
+#[cfg(feature = "nightly")]
+pub use nightly::{
+    Int,
+    Uint,
+};

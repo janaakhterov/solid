@@ -158,4 +158,10 @@ still need to add the file as a module:
 ```rust
 mod solidity_contract;
 ```
+As of version cargo-solidv0.1.4 you can also generate the files into a directory such as `src/generated`, and
+there is also support for generating code using nightly definitions of `BytesFix` and `Int`.
+```bash
+cargo solid --nightly -o generated stateful.json
+```
+
 [example](examples/cargo-solid-example/src/main.rs)

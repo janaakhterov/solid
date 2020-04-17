@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.1.3
+
+### Misc
+
+  * Rexported `BytesFix`
+
+  * Rexported `Int` and `Uint`
+
 ## 0.1.2
 
 ### Added

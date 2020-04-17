@@ -15,11 +15,11 @@ pub struct SolidityField {
 }
 
 impl SolidityField {
-    pub fn to_rust_function(&self) -> String {
+    pub fn to_rust_function(&self, nightly: bool) -> String {
         let inputs = if let Some(inputs) = &self.inputs {
             inputs
                 .iter()
-                .map(|ty| ty.to_rust_declaration(false))
+                .map(|ty| ty.to_rust_declaration(false, nightly))
                 .collect::<Vec<_>>()
                 .join(", ")
         } else {
@@ -29,7 +29,7 @@ impl SolidityField {
         let variables = if let Some(inputs) = &self.inputs {
             inputs
                 .iter()
-                .map(|input| format!("\n\t\t\t.push({})", input.name))
+                .map(|input| format!("\n            .push({})", input.name))
                 .collect::<Vec<_>>()
                 .join("")
         } else {
@@ -43,7 +43,7 @@ impl SolidityField {
         };
 
         let name = if let Some(ref name) = self.name {
-            format!("\n\t\t\t.name(\"{}\")", name.as_str())
+            format!("\n            .name(\"{}\")", name.as_str())
         } else {
             "".to_string()
         };
@@ -64,7 +64,7 @@ impl SolidityField {
         }
     }
 
-    pub fn get_output_type(&self) -> Option<String> {
+    pub fn get_output_type(&self, nightly: bool) -> Option<String> {
         if let (Some(outputs), Some(name)) = (&self.outputs, &self.name) {
             let named = outputs
                 .iter()
@@ -95,7 +95,7 @@ impl SolidityField {
 
             let declarations = outputs
                 .iter()
-                .map(|r#type| format!("\tpub {},", r#type.to_rust_declaration(true)))
+                .map(|r#type| format!("    pub {},", r#type.to_rust_declaration(true, nightly)))
                 .collect::<Vec<_>>()
                 .join("\n");
 

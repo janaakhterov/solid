@@ -94,6 +94,14 @@ struct ContractCallComposite<'a> {
     memos: &'a [&'a str],
     matrix: &'a [&'a [&'a [u8]]],
 }
+
+// If you want to manually build the contract you can use the provided `Builder`
+let function = Builder::new()
+    .name("transfer")
+    .push("daniel")
+    .push(10u128)
+    .push(Bytes10([1u8; 10]))
+    .build();
 ```
 
 ### [num_bigint](https://docs.rs/num-bigint/0.2.6/num_bigint/) Support
@@ -113,6 +121,20 @@ struct ContractTransfer<'a> {
 }
 ```
 
+### [ethereum_types](https://docs.rs/ethereum-types/0.9.0/ethereum_types/index.html) Support
+
+If you'd like support for `ethereum_types` enable the `ethereum_types` feature.
+
+``` rust
+// Support for Address, U256, U128 from `ethereum_types` crate.
+#[derive(Encode)]
+#[solid(rename = "transfer")]
+struct ContractTransfer<'a> {
+    amount: ethereum_types::U256,
+    to: ethereum_types::Address,
+}
+```
+
 ### Install
 
 ```toml
@@ -123,12 +145,21 @@ solid = "0.1.3"
 
 # num_bigint support
 solid = { version = "0.1.3", default-features = false, features = [ "derive", "serde", "bigint" ] }
+
+# ethereum_types support
+solid = { version = "0.1.3", default-features = false, features = [ "derive", "serde", "ethereum_types" ] }
+```
+
+#### Using [cargo-edit](https://github.com/killercup/cargo-edit)
+```bash
+cargo add solid
 ```
 
 #### Features
  - derive: Add support for the `Encode` and `Decode` derive macros. (Recommended)
  - derse: Add support for `serde`s `Serialize` and `Deserialize` derive macros, and `to_bytes` function.
  - bigint: Add suport for `num_bigint` crate.
+ - ethereum_types: Add support for `ethereum_types` crate.
  - nightly: Experimental const generic support.
 
 ### cargo-solid Subcommand

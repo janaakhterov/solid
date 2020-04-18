@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+### Add
+
+  * Implement support several types from the `ethereum_types` crate
+
 ## 0.1.3
 
 ### Misc

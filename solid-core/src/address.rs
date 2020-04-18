@@ -4,9 +4,12 @@ use crate::{
     into_type::IntoType,
     Error,
 };
-use std::convert::{
-    TryFrom,
-    TryInto,
+use std::{
+    borrow::Cow,
+    convert::{
+        TryFrom,
+        TryInto,
+    },
 };
 
 /// Simple wrapper for the Solidity type `address`
@@ -85,7 +88,7 @@ impl<'a> Decode<'a> for Address {
 }
 
 impl IntoType for Address {
-    fn into_type() -> String {
-        "address".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("address")
     }
 }

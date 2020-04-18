@@ -4,9 +4,12 @@ use crate::{
     into_type::IntoType,
     Error,
 };
-use std::convert::{
-    TryFrom,
-    TryInto,
+use std::{
+    borrow::Cow,
+    convert::{
+        TryFrom,
+        TryInto,
+    },
 };
 
 /// Simple wrapper for the Solidity type `function`
@@ -85,7 +88,7 @@ impl<'a> Decode<'a> for Function {
 }
 
 impl IntoType for Function {
-    fn into_type() -> String {
-        "function".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("function")
     }
 }

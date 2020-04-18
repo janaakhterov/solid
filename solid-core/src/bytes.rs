@@ -3,6 +3,7 @@ use crate::{
     encode::Encode,
     into_type::IntoType,
 };
+use std::borrow::Cow;
 
 /// Solidity Type `bytes`
 pub struct Bytes<'a>(pub &'a [u8]);
@@ -37,8 +38,8 @@ impl<'a> Decode<'a> for Bytes<'a> {
 }
 
 impl<'a> IntoType for Bytes<'a> {
-    fn into_type() -> String {
-        "bytes".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("bytes")
     }
 }
 

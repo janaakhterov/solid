@@ -3,16 +3,16 @@ use sha3::{
     Digest,
     Keccak256,
 };
+use std::borrow::Cow;
 
 /// Function signature builder
-#[derive(Default)]
 pub struct Selector {
-    params: Vec<String>,
+    params: Vec<Cow<'static, str>>,
 }
 
 impl Selector {
     pub fn new() -> Self {
-        Selector::default()
+        Self { params: Vec::new() }
     }
 
     pub fn push<T: IntoType>(mut self) -> Self {

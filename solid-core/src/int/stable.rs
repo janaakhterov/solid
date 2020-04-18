@@ -4,6 +4,7 @@ use crate::{
     into_type::IntoType,
 };
 use std::{
+    borrow::Cow,
     convert::TryInto,
     mem,
 };
@@ -205,8 +206,8 @@ macro_rules! impl_encode_int {
         }
 
         impl IntoType for $ty {
-            fn into_type() -> String {
-                $expr.to_string()
+            fn into_type() -> Cow<'static, str> {
+                Cow::Borrowed($expr)
             }
         }
     };

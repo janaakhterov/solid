@@ -8,7 +8,6 @@ use crate::{
 ///
 /// Builds a function signature along with encode parameters to can be used to
 /// call a Solidity function
-#[derive(Default)]
 pub struct Builder<'a> {
     name: Option<&'a str>,
     selector: Selector,
@@ -17,7 +16,11 @@ pub struct Builder<'a> {
 
 impl<'a> Builder<'a> {
     pub fn new() -> Self {
-        Builder::default()
+        Self {
+            name: None,
+            selector: Selector::new(),
+            params: Vec::new(),
+        }
     }
 
     /// Set the name of the function

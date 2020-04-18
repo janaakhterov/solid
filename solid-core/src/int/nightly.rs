@@ -57,7 +57,7 @@ impl<'a, const N: usize, const M: usize> IntoType for Int<'a, N, M>
 where
     [u8; M]: LengthAtMost32,
 {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         format!("int{}", N)
     }
 }
@@ -111,7 +111,7 @@ impl<'a, const N: usize, const M: usize> IntoType for Uint<'a, N, M>
 where
     [u8; M]: LengthAtMost32,
 {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         format!("uint{}", N)
     }
 }

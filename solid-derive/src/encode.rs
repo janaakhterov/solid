@@ -49,9 +49,10 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
     let field = fields.iter().map(|field| field.ident.clone());
 
-    let ty = fields.iter().map(|field| field.ty.clone());
-
+    let ty1 = fields.iter().map(|field| field.ty.clone());
     let ty2 = fields.iter().map(|field| field.ty.clone());
+    let ty3 = fields.iter().map(|field| field.ty.clone());
+    let ty4 = fields.iter().map(|field| field.ty.clone());
 
     let encode = quote! {
         fn encode(&self) -> Vec<u8> {
@@ -71,7 +72,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
             if #has_name {
                 let mut selector = solid::Selector::new();
                 #(
-                    selector = selector.push::<#ty2>();
+                    selector = selector.push::<#ty1>();
                 )*
 
                 buf[0..4].copy_from_slice(&selector.build(#name));
@@ -79,7 +80,7 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
             #(
                 let bytes = self.#field.encode();
-                if <#ty as Encode>::is_dynamic() {
+                if <#ty2 as solid::encode::Encode>::is_dynamic() {
                     buf[index * 32 + 24..(index + 1) * 32].copy_from_slice(&(offset as u64).to_be_bytes());
                     buf[offset..offset + bytes.len()].copy_from_slice(&bytes);
                     offset += bytes.len();
@@ -95,14 +96,12 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
 
     let field = fields.iter().map(|field| field.ident.clone());
 
-    let ty = fields.iter().map(|field| field.ty.clone());
-
     let required_len = quote! {
         fn required_len(&self) -> u64 {
             let mut len = 0u64;
 
             #(
-                len += if <#ty as Encode>::is_dynamic() {
+                len += if <#ty3 as solid::encode::Encode>::is_dynamic() {
                     32 + self.#field.required_len()
                 } else {
                     32
@@ -119,13 +118,28 @@ pub(super) fn impl_encode(ast: &DeriveInput) -> TokenStream {
         }
     };
 
+    let into_type = quote! {
+        fn into_type() -> std::borrow::Cow::<'static, str> {
+            let mut ty = Vec::new();
+            #(
+                ty.push(<#ty4 as solid::into_type::IntoType>::into_type());
+            )*
+
+            std::borrow::Cow::Owned(format!("({})", ty.join(",")))
+        }
+    };
+
     quote! {
-        impl #impl_generics Encode for #ident #ty_generics #where_clause {
+        impl #impl_generics solid::encode::Encode for #ident #ty_generics #where_clause {
             #encode
 
             #required_len
 
             #is_dynamic
+        }
+
+        impl #impl_generics solid::into_type::IntoType for #ident #ty_generics #where_clause {
+            #into_type
         }
     }
 }

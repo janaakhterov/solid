@@ -41,7 +41,7 @@ macro_rules! impl_fixed {
         }
 
         impl<Frac> IntoType for $ty<Frac> {
-            fn into_type() -> String {
+            fn into_type() -> Cow<'static, str> {
                 $solidity_type.to_string()
             }
         }

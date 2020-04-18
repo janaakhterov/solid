@@ -3,6 +3,7 @@ use crate::{
     encode::Encode,
     into_type::IntoType,
 };
+use std::borrow::Cow;
 
 macro_rules! impl_encode_and_into_types_for_tuples {
 	  ($(($index:tt => $ident:ident) ),+) => {
@@ -64,13 +65,13 @@ macro_rules! impl_encode_and_into_types_for_tuples {
         }
 
         impl<$($ident: IntoType, )+> IntoType for ($($ident,) +) {
-            fn into_type() -> String {
+            fn into_type() -> Cow<'static, str> {
                 let mut ty = Vec::new();
                 $(
                     ty.push($ident::into_type());
                 )+
 
-                format!("({})", ty.join(","))
+                Cow::Owned(format!("({})", ty.join(",")))
             }
         }
 

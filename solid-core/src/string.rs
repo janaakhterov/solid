@@ -3,6 +3,7 @@ use crate::{
     encode::Encode,
     into_type::IntoType,
 };
+use std::borrow::Cow;
 
 impl Encode for String {
     fn encode(&self) -> Vec<u8> {
@@ -34,8 +35,8 @@ impl<'a> Decode<'a> for String {
 }
 
 impl IntoType for String {
-    fn into_type() -> String {
-        "string".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("string")
     }
 }
 
@@ -62,8 +63,8 @@ impl Encode for &str {
 }
 
 impl IntoType for &str {
-    fn into_type() -> String {
-        "string".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("string")
     }
 }
 

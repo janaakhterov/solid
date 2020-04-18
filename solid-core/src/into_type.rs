@@ -1,64 +1,66 @@
+use std::borrow::Cow;
+
 pub trait IntoType {
-    fn into_type() -> String;
+    fn into_type() -> Cow<'static, str>;
 }
 
 impl IntoType for i8 {
-    fn into_type() -> String {
-        "int8".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("int8")
     }
 }
 
 impl IntoType for u8 {
-    fn into_type() -> String {
-        "uint8".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("uint8")
     }
 }
 
 impl IntoType for i16 {
-    fn into_type() -> String {
-        "int16".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("int16")
     }
 }
 
 impl IntoType for u16 {
-    fn into_type() -> String {
-        "uint16".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("uint16")
     }
 }
 
 impl IntoType for i32 {
-    fn into_type() -> String {
-        "int32".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("int32")
     }
 }
 
 impl IntoType for u32 {
-    fn into_type() -> String {
-        "uint32".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("uint32")
     }
 }
 
 impl IntoType for i64 {
-    fn into_type() -> String {
-        "int64".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("int64")
     }
 }
 
 impl IntoType for u64 {
-    fn into_type() -> String {
-        "uint64".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("uint64")
     }
 }
 
 impl IntoType for i128 {
-    fn into_type() -> String {
-        "int128".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("int128")
     }
 }
 
 impl IntoType for u128 {
-    fn into_type() -> String {
-        "uint128".to_string()
+    fn into_type() -> Cow<'static, str> {
+        Cow::Borrowed("uint128")
     }
 }
 
@@ -66,8 +68,8 @@ impl<'a, T> IntoType for &'a [T]
 where
     T: IntoType,
 {
-    fn into_type() -> String {
-        format!("{}[]", T::into_type())
+    fn into_type() -> Cow<'static, str> {
+        Cow::Owned(format!("{}[]", T::into_type()))
     }
 }
 
@@ -75,8 +77,8 @@ impl<T> IntoType for Vec<T>
 where
     T: IntoType,
 {
-    fn into_type() -> String {
-        format!("{}[]", T::into_type())
+    fn into_type() -> Cow<'static, str> {
+        Cow::Owned(format!("{}[]", T::into_type()))
     }
 }
 

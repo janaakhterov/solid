@@ -6,6 +6,20 @@
 
   * Implement support several types from the `ethereum_types` crate
 
+  * Support for using structs that implement `Encode` within other structs
+    that implement `Encode`. Previously this was not possible and would require
+    fields to be tuples.
+
+### Fix
+
+  * Bug requiring the import for traits `Encode` and `Decode` when using
+    the derive macros
+
+### Misc
+
+  * Update IntoType to trait to use `Cow<'static, str>` instead of `String` 
+    to remove potential allocations
+
 ## 0.1.3
 
 ### Misc

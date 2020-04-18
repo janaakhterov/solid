@@ -30,7 +30,7 @@ impl<'a> Decode<'a> for U128 {
 }
 
 impl IntoType for U128 {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         u128::into_type()
     }
 }
@@ -58,7 +58,7 @@ impl<'a> Decode<'a> for U256 {
 }
 
 impl IntoType for U256 {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         "u256".to_string()
     }
 }
@@ -88,7 +88,7 @@ impl<'a> Decode<'a> for Address {
 }
 
 impl IntoType for Address {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         "address".to_string()
     }
 }

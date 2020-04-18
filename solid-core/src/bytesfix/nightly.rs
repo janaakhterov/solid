@@ -31,7 +31,7 @@ impl<'a, const N: usize> Encode for BytesFix<'a, N> {
 }
 
 impl<'a, const N: usize> IntoType for BytesFix<'a, N> {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         format!("bytes{}", N)
     }
 }

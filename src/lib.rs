@@ -2,7 +2,7 @@
 //!
 //! ```rust
 //! # use solid::{
-//! #     Bytes10,
+//! #     bytesfix::Bytes10,
 //! #     Builder,
 //! # };
 //! #
@@ -24,13 +24,9 @@
 //! # use solid::{
 //! #     Address,
 //! #     Bytes,
-//! #     derive::{
-//! #         Encode,
-//! #         Decode,
-//! #     },
 //! #     Encode,
 //! #     Decode,
-//! #     Uint256,
+//! #     int::Uint256,
 //! # };
 //! #
 //! #[derive(Encode)]
@@ -91,7 +87,6 @@
 //!
 //! ```rust
 //! # use solid::Bytes;
-//! # use solid::derive::Encode;
 //! # use solid::Encode;
 //! #
 //! #[derive(Encode)]
@@ -107,7 +102,6 @@
 //! Note: The function signature in solidity is 4 bytes hash in the beginning of the buffer.
 //!
 //! ```rust
-//! # use solid::derive::Encode;
 //! # use solid::Encode;
 //! #
 //! #[derive(Encode)]
@@ -119,19 +113,26 @@
 #[cfg(feature = "derive")]
 pub use solid_derive as derive;
 
+#[cfg(feature = "derive")]
+pub use solid_derive::{
+    Decode,
+    Encode,
+};
+
 pub use solid_core::{
     address::Address,
     builder::Builder,
     bytes::Bytes,
     bytesfix,
-    decode::Decode,
-    encode::Encode,
+    decode,
+    encode,
     error::{
         Error,
         Result,
     },
     function::Function,
     int,
+    into_type,
     selector::Selector,
 };
 

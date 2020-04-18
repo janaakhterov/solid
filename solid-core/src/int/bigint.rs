@@ -43,7 +43,7 @@ impl<'a> Decode<'a> for BigInt {
 }
 
 impl IntoType for BigInt {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         "int256".to_string()
     }
 }
@@ -81,7 +81,7 @@ impl<'a> Decode<'a> for BigUint {
 }
 
 impl IntoType for BigUint {
-    fn into_type() -> String {
+    fn into_type() -> Cow<'static, str> {
         "uint256".to_string()
     }
 }

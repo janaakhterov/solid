@@ -3,7 +3,10 @@ use crate::{
     encode::Encode,
     into_type::IntoType,
 };
-use std::convert::TryInto;
+use std::{
+    borrow::Cow,
+    convert::TryInto,
+};
 
 pub struct Bytes1(pub [u8; 1]);
 pub struct Bytes2(pub [u8; 2]);
@@ -62,8 +65,8 @@ macro_rules! impl_into_type_and_encode_bytesfix {
             }
         }
         impl IntoType for $ty {
-            fn into_type() -> String {
-                ($expr).to_string()
+            fn into_type() -> Cow<'static, str> {
+                Cow::Borrowed($expr)
             }
         }
     };

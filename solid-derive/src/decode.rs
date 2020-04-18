@@ -51,7 +51,7 @@ pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {
     });
 
     quote! {
-        impl #generics Decode<'solidity> for #ident #ty_generics #where_clause {
+        impl #generics solid::decode::Decode<'solidity> for #ident #ty_generics #where_clause {
             fn decode(buf: &'solidity [u8]) -> Self {
                 // Solidity returns the function signature for "Error(string)" if a function throws an error.
                 // To get around this simply check if the buffer is a factor of 32 or not. This is valid since
@@ -67,11 +67,11 @@ pub(super) fn impl_decode(ast: &mut DeriveInput) -> TokenStream {
                 Self {
                     #(
                         #field: {
-                            let value = if <#ty as Encode>::is_dynamic() {
+                            let value = if <#ty as solid::encode::Encode>::is_dynamic() {
                                 let offset = u64::decode(&buf[index * 32..(index + 1) * 32]) as usize;
-                                <#ty as Decode>::decode(&buf[offset..])
+                                <#ty as solid::decode::Decode>::decode(&buf[offset..])
                             } else {
-                                <#ty as Decode>::decode(&buf[index * 32..(index + 1) * 32])
+                                <#ty as solid::decode::Decode>::decode(&buf[index * 32..(index + 1) * 32])
                             };
                             index += 1;
                             value

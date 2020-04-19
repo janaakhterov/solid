@@ -9,6 +9,7 @@ use serde::{
 };
 use solid::{
     bytesfix::Bytes10,
+    encode::Encode,
     int::Uint256,
     to_bytes,
     Address,

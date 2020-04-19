@@ -267,437 +267,329 @@ pub fn type_to_rust(ty: &str, lifetime: bool, nightly: bool) -> String {
             "int128" => "i128",
             "uint128" => "u128",
 
-            "int24" => {
-                if nightly {
-                    "solid::int::Int<24, 3>"
-                } else {
-                    "solid::int::Int24"
-                }
-            }
+            "int24" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int24<'a>",
+                (false, true) => "solid::int::Int24<'_>",
+                (_, false) => "solid::int::Int24",
+            },
 
-            "uint24" => {
-                if nightly {
-                    "solid::int::Int<24, 3>"
-                } else {
-                    "solid::int::Uint24"
-                }
-            }
+            "uint24" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint24<'a>",
+                (false, true) => "solid::int::Uint24<'_>",
+                (_, false) => "solid::int::Uint24",
+            },
 
-            "int40" => {
-                if nightly {
-                    "solid::int::Int<40, 5>"
-                } else {
-                    "solid::int::Int40"
-                }
-            }
+            "int40" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int40<'a>",
+                (false, true) => "solid::int::Int40<'_>",
+                (_, false) => "solid::int::Int40",
+            },
 
-            "uint40" => {
-                if nightly {
-                    "solid::int::Int<40, 5>"
-                } else {
-                    "solid::int::Uint40"
-                }
-            }
+            "uint40" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint40<'a>",
+                (false, true) => "solid::int::Uint40<'_>",
+                (_, false) => "solid::int::Uint40",
+            },
 
-            "int48" => {
-                if nightly {
-                    "solid::int::Int<48, 6>"
-                } else {
-                    "solid::int::Int48"
-                }
-            }
+            "int48" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int48<'a>",
+                (false, true) => "solid::int::Int48<'_>",
+                (_, false) => "solid::int::Int48",
+            },
 
-            "uint48" => {
-                if nightly {
-                    "solid::int::Int<48, 6>"
-                } else {
-                    "solid::int::Uint48"
-                }
-            }
+            "uint48" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint48<'a>",
+                (false, true) => "solid::int::Uint48<'_>",
+                (_, false) => "solid::int::Uint48",
+            },
 
-            "int56" => {
-                if nightly {
-                    "solid::int::Int<56, 7>"
-                } else {
-                    "solid::int::Int56"
-                }
-            }
+            "int56" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int56<'a>",
+                (false, true) => "solid::int::Int56<'_>",
+                (_, false) => "solid::int::Int56",
+            },
 
-            "uint56" => {
-                if nightly {
-                    "solid::int::Int<56, 7>"
-                } else {
-                    "solid::int::Uint56"
-                }
-            }
+            "uint56" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint56<'a>",
+                (false, true) => "solid::int::Uint56<'_>",
+                (_, false) => "solid::int::Uint56",
+            },
 
-            "int72" => {
-                if nightly {
-                    "solid::int::Int<72, 9>"
-                } else {
-                    "solid::int::Int72"
-                }
-            }
+            "int72" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int72<'a>",
+                (false, true) => "solid::int::Int72<'_>",
+                (_, false) => "solid::int::Int72",
+            },
 
-            "uint72" => {
-                if nightly {
-                    "solid::int::Int<72, 9>"
-                } else {
-                    "solid::int::Uint72"
-                }
-            }
+            "uint72" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint72<'a>",
+                (false, true) => "solid::int::Uint72<'_>",
+                (_, false) => "solid::int::Uint72",
+            },
 
-            "int80" => {
-                if nightly {
-                    "solid::int::Int<80, 10>"
-                } else {
-                    "solid::int::Int80"
-                }
-            }
+            "int80" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int80<'a>",
+                (false, true) => "solid::int::Int80<'_>",
+                (_, false) => "solid::int::Int80",
+            },
 
-            "uint80" => {
-                if nightly {
-                    "solid::int::Int<80, 10>"
-                } else {
-                    "solid::int::Uint80"
-                }
-            }
+            "uint80" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint80<'a>",
+                (false, true) => "solid::int::Uint80<'_>",
+                (_, false) => "solid::int::Uint80",
+            },
 
-            "int88" => {
-                if nightly {
-                    "solid::int::Int<88, 11>"
-                } else {
-                    "solid::int::Int88"
-                }
-            }
+            "int88" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int88<'a>",
+                (false, true) => "solid::int::Int88<'_>",
+                (_, false) => "solid::int::Int88",
+            },
 
-            "uint88" => {
-                if nightly {
-                    "solid::int::Int<88, 11>"
-                } else {
-                    "solid::int::Uint88"
-                }
-            }
+            "uint88" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint88<'a>",
+                (false, true) => "solid::int::Uint88<'_>",
+                (_, false) => "solid::int::Uint88",
+            },
 
-            "int96" => {
-                if nightly {
-                    "solid::int::Int<96, 12>"
-                } else {
-                    "solid::int::Int96"
-                }
-            }
+            "int96" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int96<'a>",
+                (false, true) => "solid::int::Int96<'_>",
+                (_, false) => "solid::int::Int96",
+            },
 
-            "uint96" => {
-                if nightly {
-                    "solid::int::Int<96, 12>"
-                } else {
-                    "solid::int::Uint96"
-                }
-            }
+            "uint96" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint96<'a>",
+                (false, true) => "solid::int::Uint96<'_>",
+                (_, false) => "solid::int::Uint96",
+            },
 
-            "int104" => {
-                if nightly {
-                    "solid::int::Int<104, 13>"
-                } else {
-                    "solid::int::Int104"
-                }
-            }
+            "int104" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int104<'a>",
+                (false, true) => "solid::int::Int104<'_>",
+                (_, false) => "solid::int::Int104",
+            },
 
-            "uint104" => {
-                if nightly {
-                    "solid::int::Int<104, 13>"
-                } else {
-                    "solid::int::Uint104"
-                }
-            }
+            "uint104" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint104<'a>",
+                (false, true) => "solid::int::Uint104<'_>",
+                (_, false) => "solid::int::Uint104",
+            },
 
-            "int112" => {
-                if nightly {
-                    "solid::int::Int<112, 14>"
-                } else {
-                    "solid::int::Int112"
-                }
-            }
+            "int112" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int112<'a>",
+                (false, true) => "solid::int::Int112<'_>",
+                (_, false) => "solid::int::Int112",
+            },
 
-            "uint112" => {
-                if nightly {
-                    "solid::int::Int<112, 14>"
-                } else {
-                    "solid::int::Uint112"
-                }
-            }
+            "uint112" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint112<'a>",
+                (false, true) => "solid::int::Uint112<'_>",
+                (_, false) => "solid::int::Uint112",
+            },
 
-            "int120" => {
-                if nightly {
-                    "solid::int::Int<120, 15>"
-                } else {
-                    "solid::int::Int120"
-                }
-            }
+            "int120" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int120<'a>",
+                (false, true) => "solid::int::Int120<'_>",
+                (_, false) => "solid::int::Int120",
+            },
 
-            "uint120" => {
-                if nightly {
-                    "solid::int::Int<120, 15>"
-                } else {
-                    "solid::int::Uint120"
-                }
-            }
+            "uint120" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint120<'a>",
+                (false, true) => "solid::int::Uint120<'_>",
+                (_, false) => "solid::int::Uint120",
+            },
 
-            "int136" => {
-                if nightly {
-                    "solid::int::Int<136, 17>"
-                } else {
-                    "solid::int::Int136"
-                }
-            }
+            "int136" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int136<'a>",
+                (false, true) => "solid::int::Int136<'_>",
+                (_, false) => "solid::int::Int136",
+            },
 
-            "uint136" => {
-                if nightly {
-                    "solid::int::Int<136, 17>"
-                } else {
-                    "solid::int::Uint136"
-                }
-            }
+            "uint136" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint136<'a>",
+                (false, true) => "solid::int::Uint136<'_>",
+                (_, false) => "solid::int::Uint136",
+            },
 
-            "int144" => {
-                if nightly {
-                    "solid::int::Int<144, 18>"
-                } else {
-                    "solid::int::Int144"
-                }
-            }
+            "int144" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int144<'a>",
+                (false, true) => "solid::int::Int144<'_>",
+                (_, false) => "solid::int::Int144",
+            },
 
-            "uint144" => {
-                if nightly {
-                    "solid::int::Int<144, 18>"
-                } else {
-                    "solid::int::Uint144"
-                }
-            }
+            "uint144" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint144<'a>",
+                (false, true) => "solid::int::Uint144<'_>",
+                (_, false) => "solid::int::Uint144",
+            },
 
-            "int152" => {
-                if nightly {
-                    "solid::int::Int<152, 19>"
-                } else {
-                    "solid::int::Int152"
-                }
-            }
+            "int152" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int152<'a>",
+                (false, true) => "solid::int::Int152<'_>",
+                (_, false) => "solid::int::Int152",
+            },
 
-            "uint152" => {
-                if nightly {
-                    "solid::int::Int<152, 19>"
-                } else {
-                    "solid::int::Uint152"
-                }
-            }
+            "uint152" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint152<'a>",
+                (false, true) => "solid::int::Uint152<'_>",
+                (_, false) => "solid::int::Uint152",
+            },
 
-            "int160" => {
-                if nightly {
-                    "solid::int::Int<160, 20>"
-                } else {
-                    "solid::int::Int160"
-                }
-            }
+            "int160" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int160<'a>",
+                (false, true) => "solid::int::Int160<'_>",
+                (_, false) => "solid::int::Int160",
+            },
 
-            "uint160" => {
-                if nightly {
-                    "solid::int::Int<160, 20>"
-                } else {
-                    "solid::int::Uint160"
-                }
-            }
+            "uint160" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint160<'a>",
+                (false, true) => "solid::int::Uint160<'_>",
+                (_, false) => "solid::int::Uint160",
+            },
 
-            "int168" => {
-                if nightly {
-                    "solid::int::Int<168, 21>"
-                } else {
-                    "solid::int::Int168"
-                }
-            }
+            "int168" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int168<'a>",
+                (false, true) => "solid::int::Int168<'_>",
+                (_, false) => "solid::int::Int168",
+            },
 
-            "uint168" => {
-                if nightly {
-                    "solid::int::Int<168, 21>"
-                } else {
-                    "solid::int::Uint168"
-                }
-            }
+            "uint168" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint168<'a>",
+                (false, true) => "solid::int::Uint168<'_>",
+                (_, false) => "solid::int::Uint168",
+            },
 
-            "int176" => {
-                if nightly {
-                    "solid::int::Int<176, 22>"
-                } else {
-                    "solid::int::Int176"
-                }
-            }
+            "int176" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int176<'a>",
+                (false, true) => "solid::int::Int176<'_>",
+                (_, false) => "solid::int::Int176",
+            },
 
-            "uint176" => {
-                if nightly {
-                    "solid::int::Int<176, 22>"
-                } else {
-                    "solid::int::Uint176"
-                }
-            }
+            "uint176" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint176<'a>",
+                (false, true) => "solid::int::Uint176<'_>",
+                (_, false) => "solid::int::Uint176",
+            },
 
-            "int184" => {
-                if nightly {
-                    "solid::int::Int<184, 23>"
-                } else {
-                    "solid::int::Int184"
-                }
-            }
+            "int184" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int184<'a>",
+                (false, true) => "solid::int::Int184<'_>",
+                (_, false) => "solid::int::Int184",
+            },
 
-            "uint184" => {
-                if nightly {
-                    "solid::int::Int<184, 23>"
-                } else {
-                    "solid::int::Uint184"
-                }
-            }
+            "uint184" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint184<'a>",
+                (false, true) => "solid::int::Uint184<'_>",
+                (_, false) => "solid::int::Uint184",
+            },
 
-            "int192" => {
-                if nightly {
-                    "solid::int::Int<192, 24>"
-                } else {
-                    "solid::int::Int192"
-                }
-            }
+            "int192" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int192<'a>",
+                (false, true) => "solid::int::Int192<'_>",
+                (_, false) => "solid::int::Int192",
+            },
 
-            "uint192" => {
-                if nightly {
-                    "solid::int::Int<192, 24>"
-                } else {
-                    "solid::int::Uint192"
-                }
-            }
+            "uint192" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint192<'a>",
+                (false, true) => "solid::int::Uint192<'_>",
+                (_, false) => "solid::int::Uint192",
+            },
 
-            "int200" => {
-                if nightly {
-                    "solid::int::Int<200, 25>"
-                } else {
-                    "solid::int::Int200"
-                }
-            }
+            "int200" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int200<'a>",
+                (false, true) => "solid::int::Int200<'_>",
+                (_, false) => "solid::int::Int200",
+            },
 
-            "uint200" => {
-                if nightly {
-                    "solid::int::Int<200, 25>"
-                } else {
-                    "solid::int::Uint200"
-                }
-            }
+            "uint200" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint200<'a>",
+                (false, true) => "solid::int::Uint200<'_>",
+                (_, false) => "solid::int::Uint200",
+            },
 
-            "int208" => {
-                if nightly {
-                    "solid::int::Int<208, 26>"
-                } else {
-                    "solid::int::Int208"
-                }
-            }
+            "int208" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int208<'a>",
+                (false, true) => "solid::int::Int208<'_>",
+                (_, false) => "solid::int::Int208",
+            },
 
-            "uint208" => {
-                if nightly {
-                    "solid::int::Int<208, 26>"
-                } else {
-                    "solid::int::Uint208"
-                }
-            }
+            "uint208" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint208<'a>",
+                (false, true) => "solid::int::Uint208<'_>",
+                (_, false) => "solid::int::Uint208",
+            },
 
-            "int216" => {
-                if nightly {
-                    "solid::int::Int<216, 27>"
-                } else {
-                    "solid::int::Int216"
-                }
-            }
+            "int216" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int216<'a>",
+                (false, true) => "solid::int::Int216<'_>",
+                (_, false) => "solid::int::Int216",
+            },
 
-            "uint216" => {
-                if nightly {
-                    "solid::int::Int<216, 27>"
-                } else {
-                    "solid::int::Uint216"
-                }
-            }
+            "uint216" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint216<'a>",
+                (false, true) => "solid::int::Uint216<'_>",
+                (_, false) => "solid::int::Uint216",
+            },
 
-            "int224" => {
-                if nightly {
-                    "solid::int::Int<224, 28>"
-                } else {
-                    "solid::int::Int224"
-                }
-            }
+            "int224" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int224<'a>",
+                (false, true) => "solid::int::Int224<'_>",
+                (_, false) => "solid::int::Int224",
+            },
 
-            "uint224" => {
-                if nightly {
-                    "solid::int::Int<224, 28>"
-                } else {
-                    "solid::int::Uint224"
-                }
-            }
+            "uint224" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint224<'a>",
+                (false, true) => "solid::int::Uint224<'_>",
+                (_, false) => "solid::int::Uint224",
+            },
 
-            "int232" => {
-                if nightly {
-                    "solid::int::Int<232, 29>"
-                } else {
-                    "solid::int::Int232"
-                }
-            }
+            "int232" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int232<'a>",
+                (false, true) => "solid::int::Int232<'_>",
+                (_, false) => "solid::int::Int232",
+            },
 
-            "uint232" => {
-                if nightly {
-                    "solid::int::Int<232, 29>"
-                } else {
-                    "solid::int::Uint232"
-                }
-            }
+            "uint232" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint232<'a>",
+                (false, true) => "solid::int::Uint232<'_>",
+                (_, false) => "solid::int::Uint232",
+            },
 
-            "int240" => {
-                if nightly {
-                    "solid::int::Int<240, 30>"
-                } else {
-                    "solid::int::Int240"
-                }
-            }
+            "int240" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int240<'a>",
+                (false, true) => "solid::int::Int240<'_>",
+                (_, false) => "solid::int::Int240",
+            },
 
-            "uint240" => {
-                if nightly {
-                    "solid::int::Int<240, 30>"
-                } else {
-                    "solid::int::Uint240"
-                }
-            }
+            "uint240" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint240<'a>",
+                (false, true) => "solid::int::Uint240<'_>",
+                (_, false) => "solid::int::Uint240",
+            },
 
-            "int248" => {
-                if nightly {
-                    "solid::int::Int<248, 31>"
-                } else {
-                    "solid::int::Int248"
-                }
-            }
+            "int248" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int248<'a>",
+                (false, true) => "solid::int::Int248<'_>",
+                (_, false) => "solid::int::Int248",
+            },
 
-            "uint248" => {
-                if nightly {
-                    "solid::int::Int<248, 31>"
-                } else {
-                    "solid::int::Uint248"
-                }
-            }
+            "uint248" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint248<'a>",
+                (false, true) => "solid::int::Uint248<'_>",
+                (_, false) => "solid::int::Uint248",
+            },
 
-            "int256" => {
-                if nightly {
-                    "solid::int::Int<256, 32>"
-                } else {
-                    "solid::int::Int256"
-                }
-            }
+            "int256" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Int256<'a>",
+                (false, true) => "solid::int::Int256<'_>",
+                (_, false) => "solid::int::Int256",
+            },
 
-            "uint256" => {
-                if nightly {
-                    "solid::int::Int<256, 32>"
-                } else {
-                    "solid::int::Uint256"
-                }
-            }
+            "uint256" => match (lifetime, nightly) {
+                (true, true) => "solid::int::Uint256<'a>",
+                (false, true) => "solid::int::Uint256<'_>",
+                (_, false) => "solid::int::Uint256",
+            },
 
             _ => "",
         }

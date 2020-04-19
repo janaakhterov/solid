@@ -1,4 +1,5 @@
 use crate::{
+    bytesfix::LengthAtLeast1,
     decode::Decode,
     encode::Encode,
     into_type::IntoType,
@@ -23,11 +24,11 @@ use std::{
 /// N = M * 8 which is why it's not recommend to use this until const generics are stable.
 pub struct Int<'a, const N: usize, const M: usize>(pub &'a [u8; M])
 where
-    [u8; M]: LengthAtMost32;
+    [u8; M]: LengthAtMost32 + LengthAtLeast1;
 
 impl<'a, const N: usize, const M: usize> Encode for Int<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn encode(&self) -> Vec<u8> {
         let bits = if self.0[0] & 0x80 == 0x80 { 0xff } else { 0x00 };
@@ -47,7 +48,7 @@ where
 
 impl<'a, const N: usize, const M: usize> Decode<'a> for Int<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn decode(buf: &'a [u8]) -> Self {
         Int::<N, M>(TryFrom::try_from(&buf[32 - M..32]).unwrap())
@@ -56,7 +57,7 @@ where
 
 impl<'a, const N: usize, const M: usize> IntoType for Int<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn into_type() -> Cow<'static, str> {
         Cow::Owned(format!("int{}", N))
@@ -77,11 +78,11 @@ where
 /// N = M * 8 which is why it's not recommend to use this until const generics are stable.
 pub struct Uint<'a, const N: usize, const M: usize>(pub &'a [u8; M])
 where
-    [u8; M]: LengthAtMost32;
+    [u8; M]: LengthAtMost32 + LengthAtLeast1;
 
 impl<'a, const N: usize, const M: usize> Encode for Uint<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn encode(&self) -> Vec<u8> {
         let bits = if self.0[0] & 0x80 == 0x80 { 0xff } else { 0x00 };
@@ -101,7 +102,7 @@ where
 
 impl<'a, const N: usize, const M: usize> Decode<'a> for Uint<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn decode(buf: &'a [u8]) -> Self {
         Uint::<N, M>(TryFrom::try_from(&buf[32 - M..32]).unwrap())
@@ -110,7 +111,7 @@ where
 
 impl<'a, const N: usize, const M: usize> IntoType for Uint<'a, N, M>
 where
-    [u8; M]: LengthAtMost32,
+    [u8; M]: LengthAtMost32 + LengthAtLeast1,
 {
     fn into_type() -> Cow<'static, str> {
         Cow::Owned(format!("uint{}", N))

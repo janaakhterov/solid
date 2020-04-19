@@ -9,10 +9,6 @@ use serde::{
 };
 use solid::{
     bytesfix::Bytes10,
-    derive::{
-        Decode,
-        Encode,
-    },
     int::Uint256,
     to_bytes,
     Address,

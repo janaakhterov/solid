@@ -35,7 +35,7 @@ impl {contract} {{
         format!(
             "\
 #[allow(unused_imports)]
-use solid::{{derive::Encode, Encode}};\n\n{}",
+use solid::Encode;\n\n{}",
             self.fields
                 .iter()
                 .map(|field| field.get_output_type(nightly))

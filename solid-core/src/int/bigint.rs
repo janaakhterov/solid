@@ -7,6 +7,7 @@ use num_bigint::{
     BigInt,
     BigUint,
 };
+use std::borrow::Cow;
 
 impl Encode for BigInt {
     fn encode(&self) -> Vec<u8> {
@@ -44,7 +45,7 @@ impl<'a> Decode<'a> for BigInt {
 
 impl IntoType for BigInt {
     fn into_type() -> Cow<'static, str> {
-        "int256".to_string()
+        Cow::Borrowed("int256")
     }
 }
 
@@ -82,6 +83,6 @@ impl<'a> Decode<'a> for BigUint {
 
 impl IntoType for BigUint {
     fn into_type() -> Cow<'static, str> {
-        "uint256".to_string()
+        Cow::Borrowed("uint256")
     }
 }

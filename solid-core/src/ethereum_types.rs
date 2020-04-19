@@ -8,6 +8,7 @@ use ethereum_types::{
     U128,
     U256,
 };
+use std::borrow::Cow;
 
 impl Encode for U128 {
     fn encode(&self) -> Vec<u8> {
@@ -59,7 +60,7 @@ impl<'a> Decode<'a> for U256 {
 
 impl IntoType for U256 {
     fn into_type() -> Cow<'static, str> {
-        "u256".to_string()
+        Cow::Borrowed("u256")
     }
 }
 
@@ -89,6 +90,6 @@ impl<'a> Decode<'a> for Address {
 
 impl IntoType for Address {
     fn into_type() -> Cow<'static, str> {
-        "address".to_string()
+        Cow::Borrowed("address")
     }
 }

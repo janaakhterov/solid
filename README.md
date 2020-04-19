@@ -141,13 +141,13 @@ struct ContractTransfer<'a> {
 # Cargo.toml
 
 # Default features which includes `derive`, and `serde`
-solid = "0.1.3"
+solid = "0.1.4"
 
 # num_bigint support
-solid = { version = "0.1.3", default-features = false, features = [ "derive", "serde", "bigint" ] }
+solid = { version = "0.1.4", default-features = false, features = [ "derive", "serde", "bigint" ] }
 
 # ethereum_types support
-solid = { version = "0.1.3", default-features = false, features = [ "derive", "serde", "ethereum_types" ] }
+solid = { version = "0.1.4", default-features = false, features = [ "derive", "serde", "ethereum_types" ] }
 ```
 
 #### Using [cargo-edit](https://github.com/killercup/cargo-edit)

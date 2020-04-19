@@ -1,6 +1,6 @@
 [package]
 name = "solid-derive"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
 edition = "2018"
 description = "Macros for the `solid` crate. Not intended to be used directly."

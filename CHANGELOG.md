@@ -1,6 +1,12 @@
 # CHANGELOG
 
-## Unreleased
+## 0.1.5
+
+### Fix
+
+  * `Function` was being encoded as `int192` instead of `bytes24`
+
+## 0.1.4
 
 ### Add
 

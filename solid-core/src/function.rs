@@ -29,7 +29,7 @@ impl TryFrom<&str> for Function {
         let slice = hex::decode(&s)?;
         let slice: [u8; 24] = slice.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&slice);
+        buf[0..24].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
@@ -40,7 +40,7 @@ impl TryFrom<&[u8]> for Function {
     fn try_from(value: &[u8]) -> Result<Function, Self::Error> {
         let slice: [u8; 24] = value.try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&slice);
+        buf[0..24].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
@@ -51,7 +51,7 @@ impl TryFrom<&Vec<u8>> for Function {
     fn try_from(value: &Vec<u8>) -> Result<Function, Self::Error> {
         let slice: [u8; 24] = value.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&slice);
+        buf[0..24].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }
@@ -62,7 +62,7 @@ impl TryFrom<Vec<u8>> for Function {
     fn try_from(value: Vec<u8>) -> Result<Function, Self::Error> {
         let slice: [u8; 24] = value.as_slice().try_into()?;
         let mut buf = [0u8; 32];
-        buf[8..].copy_from_slice(&slice);
+        buf[0..24].copy_from_slice(&slice);
         Ok(Function(buf))
     }
 }

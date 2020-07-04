@@ -7,11 +7,10 @@ pub struct GetDetailsNamedOutput<'a> {
     pub random_bytes_: solid::Bytes<'a>,
     pub random_bytes10_: solid::bytesfix::BytesFix<'a, 10>,
 }
-                        
+
 pub struct StatefulContract;
 
 impl StatefulContract {
-
     #[rustfmt::skip]
     #[allow(dead_code)]
     pub fn new(message_: &str, random_bytes_: solid::Bytes<'_>, random_bytes10_: solid::bytesfix::BytesFix<'_, 10>) -> Vec<u8> {

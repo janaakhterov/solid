@@ -245,7 +245,7 @@ fn address_test() -> Result<(), anyhow::Error> {
 fn function_test() -> Result<(), anyhow::Error> {
     let buf = Builder::new().push(Function::try_from(&[0xffu8; 24][..])?).build();
 
-    let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
+    let function = hex::decode("ffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000").unwrap();
 
     assert_eq!(&function[0..32], &buf[32 * 0..32 * 1]);
 
@@ -257,7 +257,7 @@ fn function_test() -> Result<(), anyhow::Error> {
 fn hex_test() -> Result<(), anyhow::Error> {
     let buf = Builder::new().push(Function::try_from("0xffffffffffffffffffffffffffffffffffffffffffffffff")?).build();
 
-    let function = hex::decode("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff").unwrap();
+    let function = hex::decode("ffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000").unwrap();
 
     assert_eq!(&function[0..32], &buf[32 * 0..32 * 1]);
 

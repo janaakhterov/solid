@@ -21,14 +21,6 @@ impl<'a, const N: usize> Encode for BytesFix<'a, N> {
         buf[0..N].copy_from_slice(&self.0[..]);
         buf
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a, const N: usize> IntoType for BytesFix<'a, N> {

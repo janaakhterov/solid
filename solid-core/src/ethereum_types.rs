@@ -14,14 +14,6 @@ impl Encode for U128 {
     fn encode(&self) -> Vec<u8> {
         self.as_u128().encode()
     }
-
-    fn required_len(&self) -> u64 {
-        self.as_u128().required_len()
-    }
-
-    fn is_dynamic() -> bool {
-        u128::is_dynamic()
-    }
 }
 
 impl<'a> Decode<'a> for U128 {
@@ -42,14 +34,6 @@ impl Encode for U256 {
         self.to_big_endian(&mut buf);
         buf
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a> Decode<'a> for U256 {
@@ -69,14 +53,6 @@ impl Encode for Address {
         let mut buf = vec![0u8; 32];
         buf[12..].copy_from_slice(&self.as_bytes());
         buf
-    }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
     }
 }
 

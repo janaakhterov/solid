@@ -22,14 +22,6 @@ macro_rules! impl_encode_signed {
                 buf[32 - mem::size_of::<$ty>()..].copy_from_slice(&self.to_be_bytes());
                 buf
             }
-
-            fn required_len(&self) -> u64 {
-                32
-            }
-
-            fn is_dynamic() -> bool {
-                false
-            }
         }
     };
 }
@@ -41,14 +33,6 @@ macro_rules! impl_encode_unsigned {
                 let mut buf = vec![0u8; 32];
                 buf[32 - mem::size_of::<$ty>()..].copy_from_slice(&self.to_be_bytes());
                 buf
-            }
-
-            fn required_len(&self) -> u64 {
-                32
-            }
-
-            fn is_dynamic() -> bool {
-                false
             }
         }
     };
@@ -188,14 +172,6 @@ macro_rules! impl_encode_int {
                 let mut value = vec![0u8; 32];
                 value[32 - self.0.len()..32].copy_from_slice(&self.0);
                 value
-            }
-
-            fn required_len(&self) -> u64 {
-                32
-            }
-
-            fn is_dynamic() -> bool {
-                false
             }
         }
 

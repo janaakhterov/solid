@@ -27,14 +27,6 @@ impl Encode for BigInt {
             len => bytes.split_off(len - 32),
         }
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a> Decode<'a> for BigInt {
@@ -64,14 +56,6 @@ impl Encode for BigUint {
 
             len => bytes.split_off(len - 32),
         }
-    }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
     }
 }
 

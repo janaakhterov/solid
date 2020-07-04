@@ -36,14 +36,6 @@ where
         buf[32 - N / 8..].copy_from_slice(&self.0[..]);
         buf
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a, const N: usize, const M: usize> Decode<'a> for Int<'a, N, M>
@@ -89,14 +81,6 @@ where
         let mut buf = vec![bits; 32];
         buf[32 - N / 8..].copy_from_slice(&self.0[..]);
         buf
-    }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
     }
 }
 

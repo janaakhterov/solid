@@ -49,14 +49,6 @@ macro_rules! impl_into_type_and_encode_bytesfix {
                 buf[0..self.0.len()].copy_from_slice(&self.0);
                 buf
             }
-
-            fn required_len(&self) -> u64 {
-                32
-            }
-
-            fn is_dynamic() -> bool {
-                false
-            }
         }
 
         impl<'a> Decode<'a> for $ty {

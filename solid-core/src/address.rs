@@ -71,14 +71,6 @@ impl Encode for Address {
     fn encode(&self) -> Vec<u8> {
         self.0.to_vec()
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a> Decode<'a> for Address {

@@ -6,9 +6,16 @@ pub trait Encode {
     ///
     /// This can be a static or dynamic value based on the type. The value should be 32 bytes
     /// aligned, and does not include the 32 bytes required for the offset.
-    fn required_len(&self) -> u64;
+    fn required_len(&self) -> u64 {
+        32
+    }
 
-    fn is_dynamic() -> bool;
+    /// Is this type considered `dynamic` by solidity
+    ///
+    /// If the type is dynamic then the `value` of this field is actually the offset
+    fn is_dynamic() -> bool {
+        false
+    }
 }
 
 impl<T> Encode for &T

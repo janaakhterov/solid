@@ -24,14 +24,6 @@ macro_rules! impl_fixed {
                 vec[32 - bytes.len()..].copy_from_slice(&bytes);
                 vec
             }
-
-            fn required_len(&self) -> u64 {
-                32
-            }
-
-            fn is_dynamic() -> bool {
-                false
-            }
         }
 
         impl<'a, Frac> Decode<'a> for $ty<Frac> {

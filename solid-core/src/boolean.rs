@@ -9,14 +9,6 @@ impl Encode for bool {
         buf[31] = if *self { 1 } else { 0 };
         buf
     }
-
-    fn required_len(&self) -> u64 {
-        32
-    }
-
-    fn is_dynamic() -> bool {
-        false
-    }
 }
 
 impl<'a> Decode<'a> for bool {

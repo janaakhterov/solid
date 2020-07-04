@@ -1,6 +1,6 @@
 [package]
 name = "solid-core"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Daniel Akhterov <akhterovd@gmail.com>"]
 edition = "2018"
 description = "Core for the `solid` crate. Not intended to be used directly."
